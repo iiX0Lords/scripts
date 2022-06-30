@@ -4,7 +4,6 @@ local service = Instance.new("Folder",game)
 service.Name = "OnionService"
 
 function onion:Negate(part,filter)
-	
 	table.insert(filter,part)
 	
 	local fold = Instance.new("Model",workspace)
@@ -102,7 +101,10 @@ function onion:Negate(part,filter)
 
 	local region = CreatePartRegion(desa)
 
-
+	for i,v in pairs(game.Players:GetPlayers()) do
+		table.insert(filter,v.Character)
+	end
+	
 	for i,v in pairs(workspace:FindPartsInRegion3WithIgnoreList(region,filter)) do
 		repeat
 			if v:FindFirstChildOfClass("WeldConstraint")  then
