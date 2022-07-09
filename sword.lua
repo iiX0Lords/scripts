@@ -11,7 +11,7 @@ local canKillOtherSwords = false
 
 local teamCheck = true
 
-local waitTime = 0.05
+local waitTime = 0.2
 
 task.wait(2)
 
