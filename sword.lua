@@ -9,7 +9,7 @@ local pronounce = true
 
 local canKillOtherSwords = false
 
-local teamCheck = true
+local teamCheck = false
 
 local waitTime = 0.1
 
