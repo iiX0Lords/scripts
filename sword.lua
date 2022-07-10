@@ -557,7 +557,7 @@ function face(part,angle,speed)
 	return twenn
 end
 
-local range = 35
+local range = 50
 
 
 
