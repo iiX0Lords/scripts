@@ -453,7 +453,7 @@ function _G.PortalLib.makePortal()
 	return door
 end
 
-function _G.PortalLib.reset(keep)
+function _G.PortalLib.reset(portal1,portal2,keep)
 	local aPos = portal1.CFrame
 	local bPos = portal2.CFrame
 	local aSize = portal1.Size
