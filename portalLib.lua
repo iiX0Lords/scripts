@@ -375,6 +375,7 @@ local tweenservice = game:GetService('TweenService')
 
 local portalFold = Instance.new("Folder",workspace)
 portalFold.Name = "Portals"
+surfaces = Instance.new("Folder",game.CoreGui)
 
 function _G.PortalLib.finalize(doorA,doorB)
 	local world = Instance.new("Folder",game.Lighting)
@@ -397,7 +398,7 @@ function _G.PortalLib.finalize(doorA,doorB)
 
 	--
 
-	dualWorld = DualWorlds.new(plr.Character, doorA, doorB, Enum.NormalId.Front, plr.PlayerGui) --- used to be require
+	dualWorld = DualWorlds.new(plr.Character, doorA, doorB, Enum.NormalId.Front, surfaces) --- used to be require
 
 	dualWorld.PortalA:AddToWorld(dualWorld.PortalB:ClipModel(world:Clone()))
 	dualWorld.PortalB:AddToWorld(dualWorld.PortalA:ClipModel(world:Clone()))
@@ -463,6 +464,9 @@ function _G.PortalLib.reset(portal1,portal2,keep)
 	portal1:Destroy()
 	portal2:Destroy()
 	dualWorld.Enabled = false
+    for i,v in pairs(surfaces:GetChildren()) do
+        v:Destroy()
+    end
 	if keep then
 		local a = _G.PortalLib.makePortal()
 		a.CFrame = aPos
