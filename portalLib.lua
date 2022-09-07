@@ -464,12 +464,12 @@ function _G.PortalLib.reset(keep)
 	portal2:Destroy()
 	dualWorld.Enabled = false
 	if keep then
-		local a = makePortal()
+		local a = _G.PortalLib.makePortal()
 		a.CFrame = aPos
 		a.Size = aSize
-		local b = makePortal()
+		local b = _G.PortalLib.makePortal()
 		b.CFrame = bPos
 		b.Size = bSize
-		finalize(a,b)
+		_G.PortalLib.finalize(a,b)
 	end
 end
