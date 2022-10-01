@@ -351,7 +351,7 @@ function playSound(id,volume,loop,parent)
 end
 
 function npcModule:makeNpc(pos,colour,customName)
-	local npc = game.ReplicatedStorage.Nub:Clone()
+	local npc = game:GetObjects('rbxassetid://11131065583')[1]
 	npc.Parent = npcs
 	npc["Body Colors"].TorsoColor3 = colour or Color3.fromRGB(math.random(1,255),math.random(1,255),math.random(1,255))
 	npc:PivotTo(pos)
