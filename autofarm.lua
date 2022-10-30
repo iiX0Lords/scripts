@@ -15,6 +15,8 @@ for i,v in pairs(game.workspace.Tycoon.Tycoons:GetChildren()) do
     end
 end
 
+version = "{!#version} 1.0.0 {/#version}"
+version = string.sub(version,13,17)
 
 local cashCollector = tycoon.Essentials.CashCollector
 
@@ -107,6 +109,8 @@ uis.InputBegan:Connect(function(input, gameProcessedEvent)
         notify(tostring(enabled),2)
     end
 end)
+
+notify("Loaded Version "..version)
 
 while task.wait() do
     if enabled then
