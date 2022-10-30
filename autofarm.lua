@@ -27,7 +27,6 @@ function rebirth()
         task.wait()
         getCash()
     until cash.Value >= 500000
-    game:GetService("ReplicatedStorage").RebirthEVT:FireServer()
 end
 
 function getButtons()
