@@ -7,7 +7,7 @@ version = "{!#version} 1.7.0 {/#version}"
 version = string.sub(version,13,17)
 
 local disableLightningTP = true
-local disableClTPSound = true
+local disableClTPSound = false
 
 versionText = "idk?"
 
