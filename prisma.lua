@@ -3,13 +3,13 @@ if not game:IsLoaded() then
 end
 
 task.wait(1)
-version = "{!#version} 1.7.0 {/#version}"
+version = "{!#version} 1.7.1 {/#version}"
 version = string.sub(version,13,17)
 
 local disableLightningTP = true
 local disableClTPSound = false
 
-versionText = "idk?"
+versionText = "help me!"
 
 --- Locals
 local plr = game.Players.LocalPlayer
@@ -1276,47 +1276,6 @@ addBind(Enum.KeyCode.F4,function()
 	executeCommand("undance")
 	executeCommand("dance")
 end)
-
-
-
--- addBind(Enum.KeyCode.J,function()
--- 	if plr.Character.Humanoid.Sit == true then
--- 		slide = Instance.new("BodyForce")
--- 		--slide.MaxForce = Vector3.new(1,0,1) * 30000
--- 		--   slide.P = 5000
--- 		slide.Force = plr.Character.HumanoidRootPart.CFrame.lookVector * 45000
--- 		slide.Parent = plr.Character.HumanoidRootPart
--- 	end
--- end)
--- uis.InputEnded:Connect(function(input, gameProcessedEvent)
--- 	if input.KeyCode == Enum.KeyCode.J and not gameProcessedEvent then
--- 		if plr.Character.Humanoid.Sit == true then
--- 			if slide then
--- 				slide:Destroy()
--- 			end
--- 		end
--- 	end
--- end)
-
--- addBind(Enum.KeyCode.K,function()
--- 	if plr.Character.Humanoid.Sit == true then
--- 		slidee = Instance.new("BodyForce")
--- 		--slide.MaxForce = Vector3.new(1,0,1) * 30000
--- 		--   slide.P = 5000
--- 		slidee.Force = plr.Character.HumanoidRootPart.CFrame.lookVector *- 25000
--- 		slidee.Parent = plr.Character.HumanoidRootPart
--- 	end
--- end)
--- uis.InputEnded:Connect(function(input, gameProcessedEvent)
--- 	if input.KeyCode == Enum.KeyCode.K and not gameProcessedEvent then
--- 		if plr.Character.Humanoid.Sit == true then
--- 			if slidee then
--- 				slidee:Destroy()
--- 			end
--- 		end
--- 	end
--- end)
-
 
 
 --- Modules
@@ -2633,6 +2592,14 @@ _G.addCMD("refresh","re",function()
 		getRoot().CFrame = old
 		reloadev:Disconnect()
 	end)
+end)
+
+_G.addCMD("help",nil,function()
+	local amountOfCmds = #cmds
+	for i,v in pairs(cmds) do
+		print(v.Command)
+	end
+	chatNotif("Press F9 to see commands")
 end)
 
 
