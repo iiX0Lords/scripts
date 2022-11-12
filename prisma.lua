@@ -3,13 +3,13 @@ if not game:IsLoaded() then
 end
 
 task.wait(1)
-version = "{!#version} 1.7.1 {/#version}"
+version = "{!#version} 1.8.1 {/#version}"
 version = string.sub(version,13,17)
 
 local disableLightningTP = true
 local disableClTPSound = false
 
-versionText = "help me!"
+versionText = "bye bye server tween! 🙋‍♂️"
 
 --- Locals
 local plr = game.Players.LocalPlayer
@@ -1008,16 +1008,46 @@ end)
 local prevPos = nil
 local currentPos = nil
 
+local stbp = true
+
+function noServerTween(pos)
+	local desired = pos
+	getRoot().Parent.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+	local tempBlock = Instance.new("Part",workspace)
+	tempBlock.Anchored = true
+	tempBlock.Transparency = 1
+	tempBlock.CanCollide = false
+	tempBlock.CFrame = getRoot().CFrame
+	tempBlock.CFrame = pos
+	workspace.CurrentCamera.CameraSubject = tempBlock
+
+	workspace.FallenPartsDestroyHeight = -math.huge
+	getRoot().CFrame = getRoot().CFrame - Vector3.new(0,500)
+	task.wait(.05)
+	getRoot().CFrame = desired - Vector3.new(0,500)
+	task.wait(.01)
+	getRoot().CFrame = desired + Vector3.new(0,5,0)
+	workspace.CurrentCamera.CameraSubject = getRoot().Parent.Humanoid
+	tempBlock:Destroy()
+	delay(1,function()
+		getRoot().Parent.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+	end)
+end
 
 --- Binds
 addBind(Enum.KeyCode.V,function()
-    if mouse.Target == nil then return end
+	if mouse.Target == nil then return end
 	if not disableClTPSound then
 		playSound("rbxassetid://858508159",1,false,workspace)
 	end
 	prevPos = plr.Character.HumanoidRootPart.CFrame
-	plr.Character.HumanoidRootPart.CFrame = mouse.Hit + Vector3.new(0,5,0)
 	currentPos = mouse.Hit + Vector3.new(0,5,0)
+    if not stbp then
+		plr.Character.HumanoidRootPart.CFrame = mouse.Hit + Vector3.new(0,5,0)
+	else
+		noServerTween(mouse.Hit + Vector3.new(0,5,0))
+	end
+
 end)
 uis.InputBegan:Connect(function(input,chatting)
 	if input.KeyCode == Enum.KeyCode.LeftBracket and not chatting then
@@ -2602,6 +2632,49 @@ _G.addCMD("help",nil,function()
 	chatNotif("Press F9 to see commands")
 end)
 
+_G.addCMD("disableservertween","dst",function()
+	stbp = true
+end)
+_G.addCMD("enableservertween","est",function()
+	stbp = false
+end)
+
+
+_G.addCMD("loopsit","lsit",function()
+	sitloop = runservice.RenderStepped:Connect(function()
+		pcall(function()
+			if plr.Character.Humanoid.Sit ~= true then
+				plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + Vector3.new(0,2,0)
+			end
+
+			plr.Character.Humanoid.Sit = true
+		end)
+	end)
+end)
+_G.addCMD("unloopsit","unlsit",function()
+	sitloop:Disconnect()
+end)
+
+_G.addCMD("spin",nil,function(speed)
+	local spinSpeed = tonumber(speed) or 20
+	for i,v in pairs(getRoot():GetChildren()) do
+		if v.Name == "Spinning" then
+			v:Destroy()
+		end
+	end
+	local Spin = Instance.new("BodyAngularVelocity")
+	Spin.Name = "Spinning"
+	Spin.Parent = getRoot()
+	Spin.MaxTorque = Vector3.new(0, math.huge, 0)
+	Spin.AngularVelocity = Vector3.new(0,spinSpeed,0)
+end)
+_G.addCMD("unspin",nil,function()
+	for i,v in pairs(getRoot():GetChildren()) do
+		if v.Name == "Spinning" then
+			v:Destroy()
+		end
+	end
+end)
 
 local notifColour = Color3.fromRGB(255, 255, 255)
 
