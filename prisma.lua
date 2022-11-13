@@ -21,6 +21,7 @@ local runservice = game:GetService('RunService')
 local uis = game:GetService('UserInputService')
 local tweenservice = game:GetService('TweenService')
 local logservice = game:GetService("LogService")
+local debris = game:GetService("Debris")
 
 --- Static
 cmds = {}
@@ -147,6 +148,8 @@ spawn(function()
 end)
 
 --- Main Functions
+
+
 
 function parseInput(Zext)
     local text = string.lower(Zext)
@@ -2634,9 +2637,11 @@ end)
 
 _G.addCMD("disableservertween","dst",function()
 	stbp = true
+	notify("Changed Click Tp Mode")
 end)
 _G.addCMD("enableservertween","est",function()
 	stbp = false
+	notify("Clicktp Mode Set To Normal")
 end)
 
 
