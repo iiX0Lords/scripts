@@ -3,7 +3,7 @@ if not game:IsLoaded() then
 end
 
 task.wait(1)
-version = "{!#version} 1.8.1 {/#version}"
+version = "{!#version} 1.8.2 {/#version}"
 version = string.sub(version,13,17)
 
 local disableLightningTP = true
