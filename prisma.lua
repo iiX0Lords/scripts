@@ -3,13 +3,13 @@ if not game:IsLoaded() then
 end
 
 task.wait(1)
-version = "{!#version} 1.8.2 {/#version}"
+version = "{!#version} 2.0.0 {/#version}"
 version = string.sub(version,13,17)
 
 local disableLightningTP = true
 local disableClTPSound = false
 
-versionText = "bye bye server tween! 🙋‍♂️"
+versionText = "player noclip ☄"
 
 --- Locals
 local plr = game.Players.LocalPlayer
@@ -956,12 +956,7 @@ plr.Chatted:Connect(function(message, recipient)
 	end
 end)
 
-for i,v in pairs(loadedModules) do
-	if isfile(v) then
-		print("loaded "..v)
-		loadstring(readfile(v))()
-	end
-end
+
 
 function createLightning(startPos, endPos, segments,size,customTable)
 
@@ -997,6 +992,99 @@ function createLightning(startPos, endPos, segments,size,customTable)
 	end
 
 	return Model
+end
+
+registedBases = {}
+_G.currentBase = nil
+
+function _G.registerBase(name,default,data)
+	table.insert(registedBases,{
+		Name = name,
+		Load = data.Load,
+		Unloaded = data.Unloaded,
+		Data = data,
+		Location = nil,
+		Enabled = false,
+	})
+	print("[PRISMA] - Registed ",name," as a base")
+
+	if default then
+		for i,v in pairs(registedBases) do
+			if v.Name == name then
+				_G.currentBase = v
+			end
+		end
+	end
+end
+
+local enabled = false
+local firstTime = true
+local df = nil
+
+
+
+function dobasestuff()
+	if not enabled then
+
+		if firstTime then
+			firstTime = false
+			base = _G.currentBase.Load()
+			_G.currentBase.Location = base
+
+			-- base:PivotTo(CFrame.new(9000,9000,9000))
+			task.wait(1)
+		end
+
+		enabled = true
+		df = plr.Character.HumanoidRootPart.CFrame
+		local char = _G.currentBase.Data.Find(base)
+		plr.Character.HumanoidRootPart.CFrame = char
+		task.wait(.1)
+		_G.currentBase.Enabled = true
+	else
+		enabled = false
+		_G.currentBase.Enabled = false
+		plr.Character.HumanoidRootPart.CFrame = df
+	end
+end
+
+function _G.prismaoverridebase()
+	dobasestuff()
+end
+
+uis.InputBegan:Connect(function(input,chatting)
+	if input.KeyCode == Enum.KeyCode.PageDown and not chatting and _G.currentBase ~= nil then
+		dobasestuff()
+		-- if not enabled then
+
+        --     if firstTime then
+        --         firstTime = false
+        --         base = _G.currentBase.Load()
+		-- 		_G.currentBase.Location = base
+
+        --         -- base:PivotTo(CFrame.new(9000,9000,9000))
+		-- 		task.wait(1)
+        --     end
+
+		-- 	enabled = true
+		-- 	df = plr.Character.HumanoidRootPart.CFrame
+		-- 	local char = _G.currentBase.Data.Find(base)
+		-- 	plr.Character.HumanoidRootPart.CFrame = char
+		-- 	task.wait(.1)
+		-- 	_G.currentBase.Enabled = true
+		-- else
+		-- 	enabled = false
+		-- 	_G.currentBase.Enabled = false
+		-- 	plr.Character.HumanoidRootPart.CFrame = df
+		-- end
+	end
+end)
+
+for i,v in pairs(loadedModules) do
+	if isfile(v) then
+		print("loaded "..v)
+		loadstring(readfile(v))()
+	end
 end
 
 spawn(function()
@@ -1415,16 +1503,16 @@ function move(pos)
 	indexes.Visible = false
 end
 
-mouse.Button1Down:Connect(function()
-    if uis:IsKeyDown(Enum.KeyCode.LeftAlt) then
-        if not enabled then
-            enabled = true
-            move(mouse.Hit.p)
-        else
-            enabled = false
-        end
-    end
-end)
+-- mouse.Button1Down:Connect(function()
+--     if uis:IsKeyDown(Enum.KeyCode.LeftAlt) then
+--         if not enabled then
+--             enabled = true
+--             move(mouse.Hit.p)
+--         else
+--             enabled = false
+--         end
+--     end
+-- end)
 
 mouse.Button1Down:Connect(function()
 	if enabled then
@@ -1735,7 +1823,7 @@ _G.addCMD("f3x",nil,function()
 end)
 
 _G.addCMD("dex",nil,function()
-	loadstring(game:HttpGetAsync("https://pastebin.com/raw/fPP8bZ8Z"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"))()--loadstring(game:HttpGetAsync("https://pastebin.com/raw/fPP8bZ8Z"))()
 end)
 
 _G.addCMD("fireclickdetectors","firecd",function()
@@ -2680,6 +2768,188 @@ _G.addCMD("unspin",nil,function()
 		end
 	end
 end)
+
+_G.addCMD("unloadbase","unbase",function()
+	notify("Unloaded ".._G.currentBase.Name)
+	firstTime = true
+	_G.currentBase.Unloaded()
+	_G.currentBase = nil
+	_G.currentBase.Location = nil
+	_G.currentBase.Enabled = false
+	-- Location = nil,
+	-- 	Enabled = false,
+end)
+_G.addCMD("loadbase","base",function(name)
+	if _G.currentBase ~= nil then
+		executeCommand("unloadbase")
+	end
+	for i,v in pairs(registedBases) do
+		if v.Name == name then
+			notify("Loaded "..name)
+			_G.currentBase = v
+		end
+	end
+end)
+
+_G.addCMD("playernoclip","pnoclip",function()
+	task.spawn(function()
+		local plrs = game:GetService("Players")
+		connections = {}
+
+		for _,anti in pairs(plrs:GetPlayers()) do
+			if anti ~= plrs.LocalPlayer then
+				connections[anti.Name] = {}
+				if workspace:FindFirstChild(anti.Name) then
+					connections[anti.Name]["connection01"] = game:GetService("RunService").Heartbeat:Connect(function()
+						for _,non in pairs(anti.Character:GetDescendants()) do
+							if non:IsA("BasePart") then
+								non.CanCollide = false
+							end
+						end
+					end)
+					connections[anti.Name]["connection02"] = game:GetService("RunService").Stepped:Connect(function()
+						for _,non in pairs(anti.Character:GetDescendants()) do
+							if non:IsA("BasePart") then
+								non.CanCollide = false
+							end
+						end
+					end)
+					connections[anti.Name]["connection03"] = game:GetService("RunService").RenderStepped:Connect(function()
+						for _,non in pairs(anti.Character:GetDescendants()) do
+							if non:IsA("BasePart") then
+								non.CanCollide = false
+							end
+						end
+					end)
+				end
+				
+				anti.CharacterAdded:Connect(function(br)
+					connections[anti.Name]["connection01"] = game:GetService("RunService").Heartbeat:Connect(function()
+						for _,non in pairs(br:GetDescendants()) do
+							if non:IsA("BasePart") then
+								non.CanCollide = false
+							end
+						end
+					end)
+					connections[anti.Name]["connection02"] = game:GetService("RunService").Stepped:Connect(function()
+						for _,non in pairs(br:GetDescendants()) do
+							if non:IsA("BasePart") then
+								non.CanCollide = false
+							end
+						end
+					end)
+					connections[anti.Name]["connection03"] = game:GetService("RunService").RenderStepped:Connect(function()
+						for _,non in pairs(br:GetDescendants()) do
+							if non:IsA("BasePart") then
+								non.CanCollide = false
+							end
+						end
+					end)
+				end)
+				
+				anti.CharacterRemoving:Connect(function()
+					for _,dis in pairs(connections[anti.Name]) do
+						dis:Disconnect()
+					end
+				end)
+			end
+		end
+
+		plrConnection = plrs.PlayerAdded:Connect(function(anti)
+			connections[anti.Name] = {}
+			if workspace:FindFirstChild(anti.Name) then
+				connections[anti.Name]["connection01"] = game:GetService("RunService").Heartbeat:Connect(function()
+					for _,non in pairs(anti.Character:GetDescendants()) do
+						if non:IsA("BasePart") then
+							non.CanCollide = false
+						end
+					end
+				end)
+				-- connections[anti.Name]["connection02"] = game:GetService("RunService").Stepped:Connect(function()
+				-- 	for _,non in pairs(anti.Character:GetDescendants()) do
+				-- 		if non:IsA("BasePart") then
+				-- 			non.CanCollide = false
+				-- 		end
+				-- 	end
+				-- end)
+				-- connections[anti.Name]["connection03"] = game:GetService("RunService").RenderStepped:Connect(function()
+				-- 	for _,non in pairs(anti.Character:GetDescendants()) do
+				-- 		if non:IsA("BasePart") then
+				-- 			non.CanCollide = false
+				-- 		end
+				-- 	end
+				-- end)
+			end
+			
+			anti.CharacterAdded:Connect(function(br)
+				connections[anti.Name]["connection01"] = game:GetService("RunService").Heartbeat:Connect(function()
+					for _,non in pairs(br:GetDescendants()) do
+						if non:IsA("BasePart") then
+							non.CanCollide = false
+						end
+					end
+				end)
+				-- connections[anti.Name]["connection02"] = game:GetService("RunService").Stepped:Connect(function()
+				-- 	for _,non in pairs(br:GetDescendants()) do
+				-- 		if non:IsA("BasePart") then
+				-- 			non.CanCollide = false
+				-- 		end
+				-- 	end
+				-- end)
+				-- connections[anti.Name]["connection03"] = game:GetService("RunService").RenderStepped:Connect(function()
+				-- 	for _,non in pairs(br:GetDescendants()) do
+				-- 		if non:IsA("BasePart") then
+				-- 			non.CanCollide = false
+				-- 		end
+				-- 	end
+				-- end)
+			end)
+			
+			anti.CharacterRemoving:Connect(function()
+				for _,dis in pairs(connections[anti.Name]) do
+					dis:Disconnect()
+				end
+			end)
+		end)
+
+		plrRemoving = plrs.PlayerRemoving:Connect(function(anti)
+			if table.find(connections, anti.Name) then
+				table.remove(connections, table.find(connections, anti.Name))
+			end
+		end)
+
+		-- for _,h in pairs(workspace:GetChildren()) do
+		-- 	if h:IsA("Accessory") then
+		-- 		repeat
+		-- 			game:GetService("RunService").Stepped:Wait()
+		-- 			h:FindFirstChild("Handle").CanCollide = false
+		-- 		until (h:FindFirstChild("Handle") == nil)
+		-- 	end
+		-- end
+
+		childaddedNo = workspace.ChildAdded:Connect(function(h)
+			if h:IsA("Accessory") then
+				repeat
+					game:GetService("RunService").Stepped:Wait()
+					h:FindFirstChild("Handle").CanCollide = false
+				until (h:FindFirstChild("Handle") == nil)
+			end
+		end)
+	end)
+end)
+
+_G.addCMD("playerclip","pclip",function(name)
+	plrConnection:Disconnect()
+	plrRemoving:Disconnect()
+	childaddedNo:Disconnect()
+	for i,v in pairs(connections) do
+		v["connection01"]:Disconnect()
+		-- v["connection02"]:Disconnect()
+		-- v["connection03"]:Disconnect()
+	end
+end)
+
+
 
 local notifColour = Color3.fromRGB(255, 255, 255)
 
