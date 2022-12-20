@@ -3,13 +3,13 @@ if not game:IsLoaded() then
 end
 
 task.wait(1)
-version = "{!#version} 2.0.0 {/#version}"
+version = "{!#version} 2.1.0 {/#version}"
 version = string.sub(version,13,17)
 
 local disableLightningTP = true
 local disableClTPSound = false
 
-versionText = "player noclip ☄"
+versionText = "precision flight"
 
 --- Locals
 local plr = game.Players.LocalPlayer
@@ -1021,7 +1021,7 @@ local enabled = false
 local firstTime = true
 local df = nil
 
-
+_G.prismaAtBase = false
 
 function dobasestuff()
 	if not enabled then
@@ -1034,7 +1034,7 @@ function dobasestuff()
 			-- base:PivotTo(CFrame.new(9000,9000,9000))
 			task.wait(1)
 		end
-
+		_G.prismaAtBase = true
 		enabled = true
 		df = plr.Character.HumanoidRootPart.CFrame
 		local char = _G.currentBase.Data.Find(base)
@@ -1042,6 +1042,7 @@ function dobasestuff()
 		task.wait(.1)
 		_G.currentBase.Enabled = true
 	else
+		_G.prismaAtBase = false
 		enabled = false
 		_G.currentBase.Enabled = false
 		plr.Character.HumanoidRootPart.CFrame = df
@@ -1094,6 +1095,7 @@ spawn(function()
 		colour = Color3.fromHSV(hue/360, SAT, LUM)
 	end
 end)
+
 
 
 local prevPos = nil
@@ -1681,11 +1683,17 @@ _G.addCMD("nameesp","esp",function(arg)
 		uitext_size_constraint.MaxTextSize = 14
 		uitext_size_constraint.MinTextSize = 9
 
-		if arg == nil then
-		ESPText.Text = xPlayer.Name
-		elseif arg == "true" or arg == "yes" then
-		ESPText.Text = xPlayer.DisplayName
+		if xPlayer.DisplayName == xPlayer.Name then
+			ESPText.Text = xPlayer.Name
+		else
+			ESPText.Text = xPlayer.DisplayName.." ("..xPlayer.Name..")"
 		end
+
+		-- if arg == nil then
+		
+		-- elseif arg == "true" or arg == "yes" then
+		-- ESPText.Text = xPlayer.DisplayName
+		-- end
 		coroutine.resume(coroutine.create(function()
 			while task.wait() do
 				pcall(function()
@@ -2949,6 +2957,152 @@ _G.addCMD("playerclip","pclip",function(name)
 	end
 end)
 
+_G.addCMD("precisionflight","pfly",function(arg)
+	task.wait(1)
+	plr.DevCameraOcclusionMode = "Invisicam"
+	-- plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame * CFrame.Angles(math.rad(0),math.rad(180),math.rad(0))
+	-- workspace.CurrentCamera.CFrame = CFrame.new(0,0,0)
+	local movePart = Instance.new("Part",workspace)
+	movePart.Anchored = true
+	movePart.CFrame = plr.Character.HumanoidRootPart.CFrame
+	movePart.Transparency = 1
+	movePart.CanCollide = false
+
+
+	local walkKeyBinds = {
+		Forward = { Key = Enum.KeyCode.W, Direction = Enum.NormalId.Front },
+		Backward = { Key = Enum.KeyCode.S, Direction = Enum.NormalId.Back },
+		Left = { Key = Enum.KeyCode.A, Direction = Enum.NormalId.Left },
+		Right = { Key = Enum.KeyCode.D, Direction = Enum.NormalId.Right }
+	}
+
+	local targetMoveVelocity = Vector3.new()
+	local moveVelocity = Vector3.new()
+	local MOVE_ACCELERATION = 100
+	pfSpeed = 1
+
+	local DFMOVE_ACCELERATION = MOVE_ACCELERATION
+
+	function getWalkDirectionCameraSpace()
+		workspace.CurrentCamera.CameraSubject = plr.Character.Humanoid
+		local walkDir = Vector3.new()
+
+		for keyBindName, keyBind in pairs(walkKeyBinds) do
+			if uis:IsKeyDown(keyBind.Key) then
+				walkDir = walkDir + Vector3.FromNormalId( keyBind.Direction )
+			end
+		end
+
+		if walkDir.Magnitude > 0 then --(0, 0, 0).Unit = NaN, do not want
+			walkDir = walkDir.Unit --Normalize, because we (probably) changed an Axis so it's no longer a unit vector
+		end
+
+		return walkDir
+	end
+
+	function lerp(a, b, c)
+		return a + ((b - a) * c)
+	end
+
+	function getWalkDirectionWorldSpace(dt)
+		local walkDir = workspace.CurrentCamera.CFrame:VectorToWorldSpace( getWalkDirectionCameraSpace() )
+		walkDir = walkDir * Vector3.new(1, 0, 1) --Set Y axis to 0
+
+		if walkDir.Magnitude > 0 then --(0, 0, 0).Unit = NaN, do not want
+			walkDir = walkDir.Unit --Normalize, because we (probably) changed an Axis so it's no longer a unit vector
+		end
+
+		local moveDir = walkDir
+		
+		
+		
+		local targetMoveVelocity = moveDir
+		return lerp( moveVelocity, targetMoveVelocity, math.clamp(dt * MOVE_ACCELERATION, 0, 1)*pfSpeed )
+	end
+
+	function asignKeycodeToBool(keycode,bool)
+		uis.InputBegan:Connect(function(input,chatting)
+			if input.KeyCode == keycode and not chatting then
+				bool = true
+			end
+		end)
+		uis.InputEnded:Connect(function(input,chatting)
+			if input.KeyCode == keycode then
+				bool = false
+			end
+		end)
+		
+		return function()
+			return bool
+		end
+	end
+
+	local Getup,Getdown = asignKeycodeToBool(Enum.KeyCode.Space,false),asignKeycodeToBool(Enum.KeyCode.LeftControl,false)
+	local up,down,shift
+
+	uis.InputBegan:Connect(function(input,chatting)
+		if input.KeyCode == Enum.KeyCode.LeftShift and not chatting then
+			shift = true
+		end
+	end)
+	uis.InputEnded:Connect(function(input,chatting)
+		if input.KeyCode == Enum.KeyCode.LeftShift then
+			shift = false
+		end
+	end)
+
+	moveLoop = runservice.RenderStepped:Connect(function(dt)
+		
+		-- if shift then
+		-- 	pfSpeed = 3
+		-- else
+		-- 	pfSpeed = 1
+		-- end
+		
+		if arg == nil then
+			plr.Character.Humanoid.PlatformStand = true
+		end
+		
+		up,down,shift = Getup(),Getdown()
+		
+		movePart.CFrame = movePart.CFrame * CFrame.new(getWalkDirectionWorldSpace(dt))
+		
+		local moveVel = 0.8
+		if up then
+			movePart.CFrame = movePart.CFrame * CFrame.new(0,moveVel,0)
+		elseif down then
+			movePart.CFrame = movePart.CFrame * CFrame.new(0,-moveVel,0)
+		end
+
+		
+
+		
+		plr.Character.HumanoidRootPart.CFrame = movePart.CFrame
+		plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+		workspace.CurrentCamera.CameraSubject = movePart
+	end)
+
+
+	function undo()
+		moveLoop:Disconnect()
+		movePart:Destroy()
+		plr.DevCameraOcclusionMode = "Zoom"
+		workspace.CurrentCamera.CameraSubject = plr.Character.Humanoid
+		plr.Character.Humanoid.PlatformStand = false
+	end
+
+	plr.Character.Humanoid.Died:Connect(function()
+		undo()
+	end)
+end)
+
+_G.addCMD("unprecisionflight","unpfly",function()
+	undo()
+end)
+
+_G.addCMD("precisionflightspeed","pflyspeed",function(integer)
+	pfSpeed = tonumber(integer) or 100
+end)
 
 
 local notifColour = Color3.fromRGB(255, 255, 255)
