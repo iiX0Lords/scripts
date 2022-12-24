@@ -800,6 +800,14 @@ function formatText(text)
 	return text
 end
 
+function FindInTable(tbl,val)
+	if tbl == nil then return false end
+	for _,v in pairs(tbl) do
+		if v == val then return true end
+	end 
+	return false
+end
+
 
 
 --- Events
@@ -1045,7 +1053,9 @@ function dobasestuff()
 		_G.prismaAtBase = false
 		enabled = false
 		_G.currentBase.Enabled = false
+		_G.currentBase.Data.Returned()
 		plr.Character.HumanoidRootPart.CFrame = df
+
 	end
 end
 
@@ -1142,20 +1152,20 @@ addBind(Enum.KeyCode.V,function()
 	end
 
 end)
-uis.InputBegan:Connect(function(input,chatting)
-	if input.KeyCode == Enum.KeyCode.LeftBracket and not chatting then
-		if prevPos ~= nil then
-			plr.Character.HumanoidRootPart.CFrame = prevPos
-		end
-	end
-end)
-uis.InputBegan:Connect(function(input,chatting)
-	if input.KeyCode == Enum.KeyCode.RightBracket and not chatting then
-		if currentPos ~= nil then
-			plr.Character.HumanoidRootPart.CFrame = currentPos
-		end
-	end
-end)
+-- uis.InputBegan:Connect(function(input,chatting)
+-- 	if input.KeyCode == Enum.KeyCode.LeftBracket and not chatting then
+-- 		if prevPos ~= nil then
+-- 			plr.Character.HumanoidRootPart.CFrame = prevPos
+-- 		end
+-- 	end
+-- end)
+-- uis.InputBegan:Connect(function(input,chatting)
+-- 	if input.KeyCode == Enum.KeyCode.RightBracket and not chatting then
+-- 		if currentPos ~= nil then
+-- 			plr.Character.HumanoidRootPart.CFrame = currentPos
+-- 		end
+-- 	end
+-- end)
 
 if not disableLightningTP then
 	task.spawn(function()
@@ -1395,10 +1405,10 @@ addBind(Enum.KeyCode.RightControl,function()
 	end
 end)
 
-addBind(Enum.KeyCode.F4,function()
-	executeCommand("undance")
-	executeCommand("dance")
-end)
+-- addBind(Enum.KeyCode.F4,function()
+-- 	executeCommand("undance")
+-- 	executeCommand("dance")
+-- end)
 
 
 --- Modules
@@ -2320,8 +2330,11 @@ local args = {
 }
 
 workspace.resources.RemoteEvent:FireServer(unpack(args))
-task.wait(1)
-game.Players.LocalPlayer.PlayerGui.GUI.choiceFrame.Visible = false
+-- task.wait(1)
+game.Players.LocalPlayer.PlayerGui.GUI.choiceFrame.no.MouseButton1Click:Connect(function()
+	game.Players.LocalPlayer.PlayerGui.GUI.choiceFrame.Visible = false
+end)
+-- game.Players.LocalPlayer.PlayerGui.GUI.choiceFrame.Visible = false
 	
 end,true)
 
@@ -3103,6 +3116,7 @@ end)
 _G.addCMD("precisionflightspeed","pflyspeed",function(integer)
 	pfSpeed = tonumber(integer) or 100
 end)
+
 
 
 local notifColour = Color3.fromRGB(255, 255, 255)
