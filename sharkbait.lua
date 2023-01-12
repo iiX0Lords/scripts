@@ -45,16 +45,26 @@ weapons = weapons.get()
 
 function setStats(str,val)
     for i,v in pairs(weapons) do
-        v[str.."Old"] = v[str]
         v[str] = val
+    end
+end
+
+
+for i,v in pairs(weapons) do
+    for name,val in pairs(v) do
+        v[name.."DF"] = val
     end
 end
 
 function resetStat(str)
     for i,v in pairs(weapons) do
-        v[str] = v[str.."Old"]
+        v[str] = v[str.."DF"]
     end
 end
+
+
+
+
 
 spawn(function()
 local weapons = require(plr.PlayerScripts.Shark.SharkController.MovementModule)
@@ -352,7 +362,7 @@ local ogBoatSpeed = 0
 local bspeed = boateditor:CreateSlider({
 	Name = "Boat Speed",
 	Range = {5, 500},
-	Increment = 1,
+	Increment = 5,
 	Suffix = "",
 	CurrentValue = 5,
 	Flag = "Slider1",
@@ -390,16 +400,29 @@ runservice.RenderStepped:Connect(function(deltaTime)
     end)
 end)
 
+function setDefaultStats(str)
+    for i,v in pairs(weapons) do
+        v[str.."DF"] = v[str]
+    end
+end
+
+
+
 local frate = weaponMods:CreateSlider({
 	Name = "Firerate",
-	Range = {3, 600},
-	Increment = 1,
+	Range = {5, 600},
+	Increment = 5,
 	Suffix = "",
-	CurrentValue = 3,
+	CurrentValue = 5,
 	Flag = "Slider2",
 	Callback = function(Value)
-        setStats("Mode",2)
-		setStats("FireRate",Value)
+        if Value == 5 then
+            resetStat("Mode",2)
+            resetStat("FireRate",Value)
+            else
+            setStats("Mode",2)
+            setStats("FireRate",Value)
+        end
 	end,
 })
 
