@@ -155,6 +155,7 @@ local boateditor = Window:CreateTab("Boat")
 local weaponMods = Window:CreateTab("Weapon Mods")
 local shark = Window:CreateTab("Shark")
 local esp = Window:CreateTab("ESP")
+local misc = Window:CreateTab("Misc")
 
 local espEnabled = false
 
@@ -467,6 +468,48 @@ local recoil = weaponMods:CreateToggle({
     end,
  })
 
+local invisPart = Instance.new("Part",workspace)
+invisPart.Anchored = true
+invisPart.Size = Vector3.new(4,1,4)
+invisPart.Position = Vector3.new(0,-0.4,0)
+invisPart.Transparency = 1
+invisPart.CanCollide = false
+
+local jesusing = false
+
+jesusConnection = runservice.RenderStepped:Connect(function(deltaTime)
+    pcall(function()
+
+        if jesusing then
+            invisPart.CanCollide = true
+            invisPart.Position = Vector3.new(plr.Character.HumanoidRootPart.Position.X,-0.4,plr.Character.HumanoidRootPart.Position.Z)
+        else
+            invisPart.CanCollide = false
+        end
+
+        if plr.Character.Humanoid.Sit == true then
+            invisPart.CanCollide = false
+        end
+
+        if plr.Character.HumanoidRootPart.Position.Y <= -0.3 then
+            invisPart.CanCollide = false
+        end
+    end)
+end)
+
+ local jesus = misc:CreateToggle({
+    Name = "Jesus",
+    CurrentValue = false,
+    Flag = "JesusToggle",
+    Callback = function(Value)
+        if Value then
+            jesusing = true
+            else
+            jesusing = false
+        end
+    end,
+ })
+
 local recoil = weaponMods:CreateToggle({
     Name = "Infinite Ammo",
     CurrentValue = false,
@@ -495,7 +538,7 @@ weaponMods:CreateButton({
         if not plr.Backpack:FindFirstChildOfClass("Tool") or plr.Character:FindFirstChildOfClass("Tool") then
             return
         end
-        if instaKilling then return end
+        -- if instaKilling then return end
 
 
         function InstaKill()
@@ -525,7 +568,6 @@ weaponMods:CreateButton({
             setStats("MagSize",math.huge)
             setStats("Mode",2)
             task.wait(.1)
-            hum:EquipTool(plr.Backpack:FindFirstChildOfClass("Tool"))
             local commonFunctions = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.CommonWeaponFunctions)
             
             local OGraycastFromCamera = commonFunctions.raycastFromCamera
