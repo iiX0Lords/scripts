@@ -362,7 +362,7 @@ local ogBoatSpeed = 0
 
 local bspeed = boateditor:CreateSlider({
 	Name = "Boat Speed",
-	Range = {5, 500},
+	Range = {5, 1500},
 	Increment = 5,
 	Suffix = "",
 	CurrentValue = 5,
@@ -371,6 +371,17 @@ local bspeed = boateditor:CreateSlider({
 		boatSpeed = Value
 	end,
 })
+
+local stabbing = false
+
+local stab = boateditor:CreateToggle({
+    Name = "Boat Stabilizer",
+    CurrentValue = false,
+    Flag = "stab",
+    Callback = function(Value)
+        stabbing = Value
+    end,
+ })
 
 runservice.RenderStepped:Connect(function(deltaTime)
     pcall(function()
@@ -395,7 +406,17 @@ runservice.RenderStepped:Connect(function(deltaTime)
                 engine.Parent:FindFirstChild("UnderwaterConfigs")["PIDforward"]["I_MAX"].Value = boatSpeed
             end
         end
-
+        if stabbing then
+            if not boat:FindFirstChild("CriticalComponents").TP:FindFirstChild("Stabber") then
+                local gyro = Instance.new("BodyGyro",boat:FindFirstChild("CriticalComponents").TP)
+                gyro.MaxTorque = Vector3.new(math.huge,0,math.huge)
+                gyro.Name = "Stabber"
+            end   
+            else
+            if boat:FindFirstChild("CriticalComponents").TP:FindFirstChild("Stabber") then
+                boat:FindFirstChild("CriticalComponents").TP:FindFirstChild("Stabber"):Destroy()
+            end   
+        end
         
         
     end)
