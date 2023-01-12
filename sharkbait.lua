@@ -7,6 +7,8 @@ local runservice = game:GetService('RunService')
 local uis = game:GetService('UserInputService')
 local tweenservice = game:GetService('TweenService')
 
+
+
 spawn(function()
     
 local shop = plr.PlayerGui.Store.StoreContainer.MainFrame
@@ -160,6 +162,120 @@ local sesp = esp:CreateToggle({
             for i,v in pairs(workspace.Sharks:GetChildren()) do
                 v:FindFirstChild("Highlight"):Destroy()
             end
+        end
+    end,
+ })
+
+ ESPNEnabled = false
+
+ local sesp = esp:CreateToggle({
+    Name = "Player Esp",
+    CurrentValue = false,
+    Flag = "Toggle9",
+    Callback = function(Value)
+        if Value == true then
+            local cmdlp = game.Players.LocalPlayer
+            local cmdp = game.Players
+
+            ESPNEnabled = false
+            TrackN = false
+
+
+
+            function CreateN(xPlayer, xHead)
+                local ESP = Instance.new("BillboardGui", xHead)
+                local ESPSquare = Instance.new("Frame", ESP)
+                local ESPText = Instance.new("TextLabel", ESP)
+                ESP.Name = "ESP"
+                ESP.Adornee = xHead
+                ESP.AlwaysOnTop = true
+                ESP.ExtentsOffset = Vector3.new(0, 1, 0)
+                ESP.Size = UDim2.new(0, 5, 0, 5)
+                ESPText.Name = "NAME"
+                ESPText.BackgroundColor3 = Color3.new(255, 255, 255)
+                ESPText.BackgroundTransparency = 1
+                ESPText.BorderSizePixel = 0
+                ESPText.Position = UDim2.new(0, 0, 0, -40)
+                ESPText.Size = UDim2.new(1, 0, 10, 0)
+                ESPText.Visible = true
+                ESPText.ZIndex = 10
+                ESPText.Font = Drawing.Fonts.Monospace--Enum.Font.SourceSansSemibold
+                ESPText.TextStrokeTransparency = 0
+                ESPText.TextColor = xPlayer.TeamColor
+                ESPText.TextSize = 18
+
+                local uitext_size_constraint = Instance.new("UITextSizeConstraint",ESPText)
+                uitext_size_constraint.MaxTextSize = 14
+                uitext_size_constraint.MinTextSize = 9
+
+                if xPlayer.DisplayName == xPlayer.Name then
+                    ESPText.Text = xPlayer.Name
+                else
+                    ESPText.Text = xPlayer.DisplayName.." ("..xPlayer.Name..")"
+                end
+
+                -- if arg == nil then
+                
+                -- elseif arg == "true" or arg == "yes" then
+                -- ESPText.Text = xPlayer.DisplayName
+                -- end
+                coroutine.resume(coroutine.create(function()
+                    while task.wait() do
+                        pcall(function()
+                        if xHead.Parent.Humanoid.Health <= 0 then
+                            coroutine.yield()
+                        end
+
+                        if xPlayer:IsFriendsWith(plr.UserId) then
+                            ESPText.TextColor3 = colour
+                        else
+                            ESPText.TextColor = xPlayer.TeamColor
+                        end
+                    end)
+                    end
+                end))
+            end
+
+
+            ESPNEnabled = true
+
+            local function Handler(player)
+                if player ~= plr and ESPNEnabled then
+                    repeat
+                        wait()
+                        local suc = pcall(function()
+                            CreateN(player,player.Character.Head)
+                        end)
+                    until suc
+                end
+            end
+
+            for i,v in pairs(game.Players:GetPlayers()) do
+                Handler(v)
+                v.CharacterAdded:Connect(function()
+                    task.wait(1)
+                    Handler(v)
+                end)
+            end
+
+            game.Players.PlayerAdded:Connect(function(play)
+                task.wait(1)
+                Handler(play)
+                play.CharacterAdded:Connect(function()
+                    Handler(play)
+                end)
+            end)
+            else
+            ESPNEnabled = false
+            pcall(function()
+            for i,v in pairs(game.Players:GetPlayers()) do
+                if v.Character then
+                    if v.Character.Head:FindFirstChild("ESP") then
+                        v.Character.Head.ESP:Destroy()
+                    end
+                end
+            end
+            end)
         end
     end,
  })
@@ -329,6 +445,7 @@ local recoil = weaponMods:CreateToggle({
 --         setStats("MagSize",9999999)
 --     end,
 --  })
+local instaKilling = false
 
 weaponMods:CreateButton({
     Name = "Shark Instakill Gun (Deactivates after kill)",
@@ -337,10 +454,12 @@ weaponMods:CreateButton({
         if not plr.Backpack:FindFirstChildOfClass("Tool") or plr.Character:FindFirstChildOfClass("Tool") then
             return
         end
+        if instaKilling then return end
+
 
         function InstaKill()
             spawn(function()
-            
+            instaKilling = true
             local hum = plr.Character.Humanoid
             
             hum:UnequipTools()
@@ -447,7 +566,7 @@ weaponMods:CreateButton({
             repeat
                 task.wait()
             until tonumber(health.Text) <= 0 or health.Parent.Visible == false
-            
+            instaKilling = false
             projFire.fire = oldFIRE
             commonFunctions.raycastFromCamera = OGraycastFromCamera
             commonFunctions.raycastFromWeapon = OGraycastFromWeapon
