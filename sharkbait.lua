@@ -394,14 +394,20 @@ runservice.RenderStepped:Connect(function(deltaTime)
             local clone = engine.MaxSpeed:Clone()
             clone.Parent = engine
             clone.Name = "MaxSpeedOld"
+            local clone = config.PIDforward.I_MAX:Clone()
+            clone.Parent = config.PIDforward
+            clone.Name = "MaxSpeedOld"
         end
+
         if boatSpeed == 5 then
             engine.MaxSpeed.Value = engine.MaxSpeedOld.Value
+            config.PIDforward.I_MAX.Value = config.PIDforward.MaxSpeedOld.Value
             if engine.Parent:FindFirstChild("UnderwaterConfigs") then
                 engine.Parent:FindFirstChild("UnderwaterConfigs")["PIDforward"]["I_MAX"].Value = engine.MaxSpeedOld.Value
             end
             else
             engine.MaxSpeed.Value = boatSpeed
+            config.PIDforward.I_MAX.Value = boatSpeed
             if engine.Parent:FindFirstChild("UnderwaterConfigs") then
                 engine.Parent:FindFirstChild("UnderwaterConfigs")["PIDforward"]["I_MAX"].Value = boatSpeed
             end
