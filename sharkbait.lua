@@ -412,6 +412,24 @@ local moded = weaponMods:CreateDropdown({
         setStats("Mode",tonumber(Option))
     end,
  })
+ 
+local rawboats = require(game.Players.LocalPlayer.PlayerScripts.Inventory.InventoryManager)
+local boatNames = {}
+for i,v in pairs(rawboats.getBoatAssets()) do
+    table.insert(boatNames,i)
+end
+
+ local selector = boateditor:CreateDropdown({
+    Name = "Select Boat",
+    Options = boatNames,
+    CurrentOption = "1",
+    Flag = "Dropdown2",
+    Callback = function(Option)
+        local ohString1 = Option
+
+    game:GetService("ReplicatedStorage").EventsFolder.BoatSelection.UpdateHostBoat:FireServer(ohString1)
+    end,
+ })
 
 local recoil = weaponMods:CreateToggle({
     Name = "No-recoil",
