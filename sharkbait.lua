@@ -8,6 +8,7 @@ local uis = game:GetService('UserInputService')
 local tweenservice = game:GetService('TweenService')
 
 
+workspace.Christmas.SantaJaws:Destroy()
 
 spawn(function()
     
@@ -550,12 +551,29 @@ local recoil = weaponMods:CreateToggle({
     end,
  })
 
--- local inf = weaponMods:CreateButton({
---     Name = "Infinite Ammo",
---     Callback = function()
---         setStats("MagSize",9999999)
---     end,
---  })
+local dbb = misc:CreateButton({
+    Name = "Delete Barriers",
+    Callback = function()
+        for i,v in pairs(workspace:GetDescendants()) do
+            if v.Name == "ExtraBarrier" or v.Name == "Barrier" then
+                v:Destroy()
+            end
+        end
+    end,
+ })
+
+local bbis = misc:CreateButton({
+Name = "Delete Islands",
+Callback = function()
+    for i,v in pairs(workspace:GetDescendants()) do
+        if v.Name == "ExtraBarrier" or v.Name == "Barrier" and v.Parent ~= workspace then
+            v.Parent:Destroy()
+        end
+    end
+end,
+})
+
+
 local instaKilling = false
 
 weaponMods:CreateButton({
