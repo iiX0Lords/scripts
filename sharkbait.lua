@@ -8,7 +8,9 @@ local uis = game:GetService('UserInputService')
 local tweenservice = game:GetService('TweenService')
 
 
-workspace.Christmas.SantaJaws:Destroy()
+pcall(function()
+    workspace.Christmas.SantaJaws:Destroy()
+end)
 
 spawn(function()
     
@@ -384,6 +386,106 @@ local stab = boateditor:CreateToggle({
     end,
  })
 
+
+local ezz = false
+local autofarming = false
+
+local autofarm = shark:CreateToggle({
+    Name = "Autofarm",
+    CurrentValue = false,
+    Flag = "auto",
+    Callback = function(Value)
+        autofarming = Value
+        spawn(function()
+            while autofarming do
+                task.wait()
+                local plr = game.Players.LocalPlayer
+                local mouse = plr:GetMouse()
+                
+                local runservice = game:GetService('RunService')
+                local uis = game:GetService('UserInputService')
+                local tweenservice = game:GetService('TweenService')
+        
+                local cam = workspace.CurrentCamera
+        
+        
+                local u9 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.ProjectileFire);
+                local u10 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.HitScanFire);
+        
+                function fire()
+                    --u9.fire(plr.Character:FindFirstChildOfClass("Tool"),mouse.Hit.p)
+                    u10.Fire(plr.Character:FindFirstChildOfClass("Tool"),mouse.Hit.p)
+                end
+        
+                function stop()
+                    u10.Stop()
+                end
+        
+        
+                repeat
+                task.wait()
+                until workspace.Sharks:FindFirstChildOfClass("Model") and plr.Team == game.Teams.Survivor
+        
+        
+                print("Shark Spawned")
+        
+        
+        
+                local shark = workspace.Sharks:FindFirstChildOfClass("Model")
+                local sharkbody = shark.SharkMain:WaitForChild("Mesh")
+                -- task.wait(2)
+                plr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame * CFrame.new(5,20,0)
+                print("Setting Camera Subject")
+        
+                -- workspace.CurrentCamera.CameraSubject = sharkbody.Shark
+        
+                setStats("Mode",2)
+                setStats("MagSize",math.huge)
+                setStats("FireRate",math.huge)
+                task.wait(.1)
+                plr.Character.Humanoid:EquipTool(plr.Backpack:FindFirstChildOfClass("Tool"))
+        
+                fire()
+                repeat
+                    task.wait()
+                    pcall(function()
+                        plr.Character.HumanoidRootPart.CFrame = sharkbody.PrimaryPart.CFrame * CFrame.new(0,0,0)
+                    end)
+                until not workspace.Sharks:FindFirstChildOfClass("Model")
+                task.wait(1)
+                stop()
+                -- workspace.CurrentCamera.CameraSubject = plr.Character.Humanoid
+                resetStat("Mode")
+                resetStat("MagSize")
+                resetStat("FireRate")
+        
+                if ezz then
+                    for i = 1,3 do
+                        local args = {
+                            [1] = "ez",
+                            [2] = "All"
+                        }
+                        
+                        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
+                    end
+                end
+            end
+        end)
+    end,
+})
+
+
+
+shark:CreateToggle({
+    Name = "Spam Ez After",
+    CurrentValue = false,
+    Flag = "ez",
+    Callback = function(Value)
+       ezz = Value
+    end,
+})
+
 runservice.RenderStepped:Connect(function(deltaTime)
     pcall(function()
         local seat = plr.Character.Humanoid.SeatPart
@@ -561,17 +663,6 @@ local dbb = misc:CreateButton({
         end
     end,
  })
-
-local bbis = misc:CreateButton({
-Name = "Delete Islands",
-Callback = function()
-    for i,v in pairs(workspace:GetDescendants()) do
-        if v.Name == "ExtraBarrier" or v.Name == "Barrier" and v.Parent ~= workspace then
-            v.Parent:Destroy()
-        end
-    end
-end,
-})
 
 
 local instaKilling = false
