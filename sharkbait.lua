@@ -8,9 +8,6 @@ local uis = game:GetService('UserInputService')
 local tweenservice = game:GetService('TweenService')
 
 
-pcall(function()
-    workspace.Christmas.SantaJaws:Destroy()
-end)
 
 spawn(function()
     
@@ -390,6 +387,92 @@ local stab = boateditor:CreateToggle({
 local ezz = false
 local autofarming = false
 
+
+function instaKillShark()
+
+
+
+        local plr = game.Players.LocalPlayer
+        local mouse = plr:GetMouse()
+        
+        local runservice = game:GetService('RunService')
+        local uis = game:GetService('UserInputService')
+        local tweenservice = game:GetService('TweenService')
+    
+        local cam = workspace.CurrentCamera
+    
+    
+        local u9 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.ProjectileFire);
+        local u10 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.HitScanFire);
+    
+        function fire()
+            --u9.fire(plr.Character:FindFirstChildOfClass("Tool"),mouse.Hit.p)
+            u10.Fire(plr.Character:FindFirstChildOfClass("Tool"),mouse.Hit.p)
+        end
+    
+        function stop()
+            u10.Stop()
+        end
+    
+    
+        if workspace.Sharks:FindFirstChildOfClass("Model") and plr.Team == game.Teams.Survivor then
+    
+    
+        print("Shark Spawned")
+    
+    
+    
+        local shark = workspace.Sharks:FindFirstChildOfClass("Model")
+        local sharkbody = shark.SharkMain:WaitForChild("Mesh")
+        -- task.wait(2)
+        plr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame * CFrame.new(5,20,0)
+        print("Setting Camera Subject")
+    
+        -- workspace.CurrentCamera.CameraSubject = sharkbody.Shark
+    
+        setStats("Mode",2)
+        setStats("MagSize",math.huge)
+        setStats("FireRate",math.huge)
+        task.wait(.1)
+        plr.Character.Humanoid:EquipTool(plr.Backpack:FindFirstChildOfClass("Tool"))
+    
+        fire()
+        repeat
+            task.wait()
+            pcall(function()
+                plr.Character.HumanoidRootPart.CFrame = sharkbody.PrimaryPart.CFrame * CFrame.new(0,0,0)
+            end)
+        until not workspace.Sharks:FindFirstChildOfClass("Model")
+        task.wait(1)
+        stop()
+        -- workspace.CurrentCamera.CameraSubject = plr.Character.Humanoid
+        resetStat("Mode")
+        resetStat("MagSize")
+        resetStat("FireRate")
+    
+        if ezz then
+            for i = 1,3 do
+                local args = {
+                    [1] = "ez",
+                    [2] = "All"
+                }
+                
+                game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
+            end
+        end
+    end
+end
+
+shark:CreateButton({
+    Name = "Shark Instakill",
+    Callback = function()
+        spawn(function()
+            instaKillShark()
+        end)
+    end
+})
+
 local autofarm = shark:CreateToggle({
     Name = "Autofarm",
     CurrentValue = false,
@@ -399,77 +482,7 @@ local autofarm = shark:CreateToggle({
         spawn(function()
             while autofarming do
                 task.wait()
-                local plr = game.Players.LocalPlayer
-                local mouse = plr:GetMouse()
-                
-                local runservice = game:GetService('RunService')
-                local uis = game:GetService('UserInputService')
-                local tweenservice = game:GetService('TweenService')
-        
-                local cam = workspace.CurrentCamera
-        
-        
-                local u9 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.ProjectileFire);
-                local u10 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.HitScanFire);
-        
-                function fire()
-                    --u9.fire(plr.Character:FindFirstChildOfClass("Tool"),mouse.Hit.p)
-                    u10.Fire(plr.Character:FindFirstChildOfClass("Tool"),mouse.Hit.p)
-                end
-        
-                function stop()
-                    u10.Stop()
-                end
-        
-        
-                repeat
-                task.wait()
-                until workspace.Sharks:FindFirstChildOfClass("Model") and plr.Team == game.Teams.Survivor
-        
-        
-                print("Shark Spawned")
-        
-        
-        
-                local shark = workspace.Sharks:FindFirstChildOfClass("Model")
-                local sharkbody = shark.SharkMain:WaitForChild("Mesh")
-                -- task.wait(2)
-                plr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame * CFrame.new(5,20,0)
-                print("Setting Camera Subject")
-        
-                -- workspace.CurrentCamera.CameraSubject = sharkbody.Shark
-        
-                setStats("Mode",2)
-                setStats("MagSize",math.huge)
-                setStats("FireRate",math.huge)
-                task.wait(.1)
-                plr.Character.Humanoid:EquipTool(plr.Backpack:FindFirstChildOfClass("Tool"))
-        
-                fire()
-                repeat
-                    task.wait()
-                    pcall(function()
-                        plr.Character.HumanoidRootPart.CFrame = sharkbody.PrimaryPart.CFrame * CFrame.new(0,0,0)
-                    end)
-                until not workspace.Sharks:FindFirstChildOfClass("Model")
-                task.wait(1)
-                stop()
-                -- workspace.CurrentCamera.CameraSubject = plr.Character.Humanoid
-                resetStat("Mode")
-                resetStat("MagSize")
-                resetStat("FireRate")
-        
-                if ezz then
-                    for i = 1,3 do
-                        local args = {
-                            [1] = "ez",
-                            [2] = "All"
-                        }
-                        
-                        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
-                    end
-                end
+                instaKillShark()
             end
         end)
     end,
@@ -667,139 +680,7 @@ local dbb = misc:CreateButton({
 
 local instaKilling = false
 
-weaponMods:CreateButton({
-    Name = "Shark Instakill Gun (Deactivates after kill)",
-    Callback = function()
 
-        if not plr.Backpack:FindFirstChildOfClass("Tool") or plr.Character:FindFirstChildOfClass("Tool") then
-            return
-        end
-        -- if instaKilling then return end
-
-
-        function InstaKill()
-            spawn(function()
-            instaKilling = true
-            local hum = plr.Character.Humanoid
-            
-            hum:UnequipTools()
-            
-            
-            
-            
-            
-            local l__CollectionService__1 = game:GetService("CollectionService");
-            local l__UserInputService__2 = game:GetService("UserInputService");
-            local u3 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.WeaponUIModule);
-            local l__mouse__4 = game.Players.LocalPlayer:GetMouse();
-            local l__CurrentCamera__5 = game.Workspace.CurrentCamera;
-            
-            
-            
-            
-            
-            setStats("ProjectileSpeed",9999999999)
-            setStats("Range",999999999999)
-            setStats("FireRate",99999999999)
-            setStats("MagSize",math.huge)
-            setStats("Mode",2)
-            task.wait(.1)
-            local commonFunctions = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.CommonWeaponFunctions)
-            
-            local OGraycastFromCamera = commonFunctions.raycastFromCamera
-            local OGraycastFromWeapon = commonFunctions.raycastFromWeapon
-            
-            commonFunctions.raycastFromCamera = function(p2,p3)
-             
-                local sharks = workspace.Sharks:GetChildren()
-            
-                for i,v in pairs(sharks) do
-                    return v.PrimaryPart.Parent.Mesh.PrimaryPart, v.PrimaryPart.Parent.Mesh.PrimaryPart.Position , Enum.NormalId.Front
-                end
-                
-            end
-            
-            commonFunctions.raycastFromWeapon = function(p6, p7)
-                local sharks = workspace.Sharks:GetChildren()
-                for i,v in pairs(sharks) do
-                    return v.PrimaryPart.Parent.Mesh.PrimaryPart, v.PrimaryPart.Parent.Mesh.PrimaryPart.Position
-                end
-            end
-            
-            local projFire = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.ProjectileFire)
-            
-            local u1 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.BulletCountModule);
-            local u2 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.WeaponUIModule);
-            local u14 = require(game.ReplicatedStorage.Projectiles.ProjectileStatsModule);
-            local u4 = 0;
-            local u5 = require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("Misc"):WaitForChild("MouseModule"));
-            local u6 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.RecoilModule);
-            local u7 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.CommonWeaponFunctions);
-            local u8 = require(plr.PlayerScripts.ProjectilesClient.WeaponScript.WeaponAnimations);
-            
-            local oldFIRE = projFire.fire
-            
-            projFire.fire = function(p1, p2)
-                -- if not u1.CanFireBullet() then
-                -- 	if not u1.isReloading() then
-                -- 		u2.displayReloadButton();
-                -- 	end;
-                -- 	return;
-                -- end;
-                local l__Handle__5 = p1:FindFirstChild("Handle");
-                if not l__Handle__5 or not p1:IsDescendantOf(workspace) then
-                    return;
-                end;
-                local v6 = u14.get()[p1.Name];
-                local l__FireRate__7 = v6.FireRate;
-                local l__Mode__8 = v6.Mode;
-                local v9 = tick();
-                if v9 - u4 < 1 / l__FireRate__7 then
-                    return;
-                end;
-                u4 = v9;
-                -- local v10, v11 = u5:CastWithIgnoreList({}, true, false);
-                v11 = nil
-                for i,v in pairs(workspace.Sharks:GetChildren()) do
-                    v11 = v.PrimaryPart.Parent.Mesh.PrimaryPart
-                end
-                if v11 then
-                    u2.displayBulletDelayTime(l__FireRate__7);
-                    u6.applyRecoil(u14.get()[p1.Name].Recoil);
-                    u1.BulletFired(p1);
-                    u7.muzzleEffects(p1);
-                    u8.playFire(p1);
-                    local v12 = Instance.new("Attachment", game.Workspace.Terrain);
-                    v12.WorldPosition = l__Handle__5.Position;
-                    local v13 = game.SoundService.WeaponSounds.ShotFired[v6.SoundName]:Clone();
-                    v13.Parent = v12;
-                    v13.PlayOnRemove = true;
-                    v12:Destroy();
-                    game.ReplicatedStorage.Projectiles.Events.Weapons.HitScanFire:FireServer(v11);
-                end;
-            end;
-            
-            
-            local health = plr.PlayerGui.HUD.TopBar.HealthBar.HealthValue
-            
-            repeat
-                task.wait()
-            until tonumber(health.Text) <= 0 or health.Parent.Visible == false
-            instaKilling = false
-            projFire.fire = oldFIRE
-            commonFunctions.raycastFromCamera = OGraycastFromCamera
-            commonFunctions.raycastFromWeapon = OGraycastFromWeapon
-            
-            resetStat("ProjectileSpeed",900000)
-            resetStat("Range",9000000)
-            resetStat("FireRate",90000)
-            resetStat("Mode",90000)
-            resetStat("MagSize",90000)
-            end)
-            end
-        InstaKill()
-    end
-})
 
 local settings = Window:CreateTab("Settings")
 
