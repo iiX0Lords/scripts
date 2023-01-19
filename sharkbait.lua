@@ -7,7 +7,7 @@ local runservice = game:GetService('RunService')
 local uis = game:GetService('UserInputService')
 local tweenservice = game:GetService('TweenService')
 
-
+plr.PlayerScripts.AFK:ClearAllChildren()
 
 spawn(function()
     
@@ -158,6 +158,8 @@ local esp = Window:CreateTab("ESP")
 local misc = Window:CreateTab("Misc")
 
 local espEnabled = false
+
+
 
 local sesp = esp:CreateToggle({
     Name = "Shark Esp",
@@ -610,6 +612,8 @@ shark:CreateToggle({
     end,
 })
 
+
+
 runservice.RenderStepped:Connect(function(deltaTime)
     pcall(function()
         local seat = plr.Character.Humanoid.SeatPart
@@ -764,6 +768,17 @@ end)
     end,
  })
 
+misc:CreateToggle({
+    Name = "Infinite Oxygen",
+    CurrentValue = false,
+    Flag = "io",
+    Callback = function(Value)
+        plr.PlayerScripts.HUD.Oxygen.Enabled = Value
+    end,
+})
+
+
+
 local recoil = weaponMods:CreateToggle({
     Name = "Infinite Ammo",
     CurrentValue = false,
@@ -788,6 +803,13 @@ local dbb = misc:CreateButton({
     end,
  })
 
+misc:CreateButton({
+Name = "Clear Water",
+Callback = function()
+    workspace.Terrain.WaterTransparency = 1
+    workspace.Terrain.WaterReflectance = 0
+end,
+})
 
 local instaKilling = false
 
