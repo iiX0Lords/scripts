@@ -383,6 +383,117 @@ local stab = boateditor:CreateToggle({
     end,
  })
 
+local boatfly = false
+
+boateditor:CreateToggle({
+    Name = "Boat Fly",
+    CurrentValue = false,
+    Flag = "stab",
+    Callback = function(Value)
+        boatfly = Value
+    end,
+})
+
+boatflyspeed = 150
+
+boateditor:CreateSlider({
+	Name = "Boatfly Speed",
+	Range = {150, 5000},
+	Increment = 5,
+	Suffix = "",
+	CurrentValue = 150,
+	Flag = "Slider1",
+	Callback = function(Value)
+		boatflyspeed = Value
+	end,
+})
+
+spawn(function()
+    local walkKeyBinds = {
+        Forward = { Key = Enum.KeyCode.W, Direction = Enum.NormalId.Front },
+        Backward = { Key = Enum.KeyCode.S, Direction = Enum.NormalId.Back },
+        Left = { Key = Enum.KeyCode.A, Direction = Enum.NormalId.Left },
+        Right = { Key = Enum.KeyCode.D, Direction = Enum.NormalId.Right }
+    }
+    
+    local targetMoveVelocity = Vector3.new()
+    local moveVelocity = Vector3.new()
+    local MOVE_ACCELERATION = 100
+    pfSpeed = 1
+    
+    local DFMOVE_ACCELERATION = MOVE_ACCELERATION
+    
+    function getWalkDirectionCameraSpace()
+        workspace.CurrentCamera.CameraSubject = plr.Character.Humanoid
+        local walkDir = Vector3.new()
+    
+        for keyBindName, keyBind in pairs(walkKeyBinds) do
+            if uis:IsKeyDown(keyBind.Key) then
+                walkDir = walkDir + Vector3.FromNormalId( keyBind.Direction )
+            end
+        end
+    
+        if walkDir.Magnitude > 0 then --(0, 0, 0).Unit = NaN, do not want
+            walkDir = walkDir.Unit --Normalize, because we (probably) changed an Axis so it's no longer a unit vector
+        end
+    
+        return walkDir
+    end
+    
+    function lerp(a, b, c)
+        return a + ((b - a) * c)
+    end
+    
+    function getWalkDirectionWorldSpace(dt)
+        local walkDir = workspace.CurrentCamera.CFrame:VectorToWorldSpace( getWalkDirectionCameraSpace() )
+        walkDir = walkDir --* Vector3.new(1, 0, 1) --Set Y axis to 0
+    
+        if walkDir.Magnitude > 0 then --(0, 0, 0).Unit = NaN, do not want
+            walkDir = walkDir.Unit --Normalize, because we (probably) changed an Axis so it's no longer a unit vector
+        end
+    
+        local moveDir = walkDir
+        
+        
+        
+        local targetMoveVelocity = moveDir
+        return lerp( moveVelocity, targetMoveVelocity, math.clamp(dt * MOVE_ACCELERATION, 0, 1)*pfSpeed )
+    end
+    
+    
+    
+    runservice.RenderStepped:Connect(function(dt)
+        if boatfly then
+            local seat = plr.Character.Humanoid.SeatPart
+            if seat == nil then return end
+            local boat = seat.Parent.Parent
+            if not boat.PrimaryPart:FindFirstChild("BodyGyro") then
+                T = boat.PrimaryPart
+                BG = Instance.new('BodyGyro')
+                BV = Instance.new('BodyVelocity')
+                BG.P = 9e4
+                BG.Parent = boat.PrimaryPart
+                BV.Parent = boat.PrimaryPart
+                BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+                BG.cframe = boat.PrimaryPart.CFrame
+                BV.velocity = Vector3.new(0, 0, 0)
+                BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+                boat:SetAttribute("Flyspeed",150)
+                else
+                BV.Velocity = getWalkDirectionWorldSpace(dt)*boatflyspeed
+                BG.cframe = workspace.CurrentCamera.CoordinateFrame
+            end
+        else
+            local seat = plr.Character.Humanoid.SeatPart
+            if seat == nil then return end
+            local boat = seat.Parent.Parent
+            if boat.PrimaryPart:FindFirstChild("BodyGyro") then
+                boat.PrimaryPart:FindFirstChild("BodyGyro"):Destroy()
+                boat.PrimaryPart:FindFirstChild("BodyVelocity"):Destroy()
+            end
+        end
+    end)
+end)
 
 local ezz = false
 local autofarming = false
