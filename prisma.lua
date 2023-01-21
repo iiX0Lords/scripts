@@ -5,7 +5,7 @@ end
 
 
 task.wait(1)
-version = "{!#version} 2.3.1 {/#version}"
+version = "{!#version} 2.4.0 {/#version}"
 version = string.sub(version,13,17)
 versionText = "New commandbar"
 
@@ -1207,7 +1207,7 @@ end)
 local prevPos = nil
 local currentPos = nil
 
-local stbp = true
+local stbp = false
 
 function noServerTween(pos)
 	local desired = pos
@@ -3534,7 +3534,7 @@ spawn(function()
 	game:GetService("TweenService"):Create(LoadingThing, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = UDim2.new(1, 0, 1, 0)}):Play()
 	game:GetService("TweenService"):Create(LoadingThing_2, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = UDim2.new(1, 0, 1, 0)}):Play()
 	
-	version = "{!#version} 2.3.1 {/#version}"
+	version = "{!#version} 2.4.0 {/#version}"
 	version = string.sub(version,13,17)
 	
 	AdminNameLabel.Visible = true
