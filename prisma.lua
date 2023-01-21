@@ -2,14 +2,17 @@ if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
 
+
+
 task.wait(1)
-version = "{!#version} 2.1.0 {/#version}"
+version = "{!#version} 2.3.1 {/#version}"
 version = string.sub(version,13,17)
+versionText = "New commandbar"
 
 local disableLightningTP = true
 local disableClTPSound = false
 
-versionText = "precision flight"
+
 
 --- Locals
 local plr = game.Players.LocalPlayer
@@ -45,107 +48,224 @@ local loadedModules = datastore:Datastore("PrismaModules")
 --- Onload
 
 function createUI()
+	-- Prisma = Instance.new("ScreenGui")
+	-- outline = Instance.new("Frame")
+	-- UICorner = Instance.new("UICorner")
+	-- input = Instance.new("TextBox")
+	-- background = Instance.new("Frame")
+	-- UICorner_2 = Instance.new("UICorner")
+
+	-- --Properties:
+
+	-- Prisma.Name = "Prisma"
+	-- Prisma.Parent = game.CoreGui
+	-- Prisma.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	-- Prisma.ResetOnSpawn = false
+
+	-- outline.Name = "outline"
+	-- outline.Parent = Prisma
+	-- outline.Active = true
+	-- outline.AnchorPoint = Vector2.new(0.5, 0.5)
+	-- outline.BackgroundColor3 = Color3.fromRGB(255, 170, 127)
+	-- outline.Position = UDim2.new(0.5,0,2,0)
+	-- outline.Selectable = true
+	-- outline.Size = UDim2.new(0, 202, 0, 42)
+
+	-- UICorner.CornerRadius = UDim.new(0, 4)
+	-- UICorner.Parent = outline
+
+	-- input.Name = "input"
+	-- input.Parent = outline
+	-- input.AnchorPoint = Vector2.new(0.5, 0.5)
+	-- input.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+	-- input.BackgroundTransparency = 1.000
+	-- input.Position = UDim2.new(0.5, 0, 0.5, 0)
+	-- input.Size = UDim2.new(0, 200, 0, 40)
+	-- input.ZIndex = 2
+	-- input.Font = Enum.Font.SourceSans
+	-- input.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+	-- input.Text = "mdvo"
+	-- input.TextColor3 = Color3.fromRGB(255, 255, 255)
+	-- input.TextSize = 16.000
+
+	-- background.Name = "background"
+	-- background.Parent = outline
+	-- background.Active = true
+	-- background.AnchorPoint = Vector2.new(0.5, 0.5)
+	-- background.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+	-- background.Position = UDim2.new(0.5, 0, 0.5, 0)
+	-- background.Selectable = true
+	-- background.Size = UDim2.new(0, 200, 0, 40)
+
+	-- UICorner_2.CornerRadius = UDim.new(0, 4)
+	-- UICorner_2.Parent = background
+    
+    
+    
+    -- outline.Visible = false
 	Prisma = Instance.new("ScreenGui")
-	outline = Instance.new("Frame")
-	UICorner = Instance.new("UICorner")
+	CmdBarFrame = Instance.new("Frame")
+	CmdBarDesign = Instance.new("ImageLabel")
 	input = Instance.new("TextBox")
-	background = Instance.new("Frame")
-	UICorner_2 = Instance.new("UICorner")
+	CmdList = Instance.new("ScrollingFrame")
+	ExampleLabel = Instance.new("TextLabel")
+	local CmdListUIListLayout = Instance.new("UIListLayout")
+
+	autocomplete = input:Clone()
+    autocomplete.Name = "autocomplete"
+    autocomplete.TextColor3 = Color3.fromRGB(0, 0, 0)
+    autocomplete.ClearTextOnFocus = false
+    autocomplete.TextEditable = false
+	autocomplete.Visible = false
+    autocomplete.ZIndex = 1
+	autocomplete.Position = UDim2.new(0.5,0,1.3, 0)
 
 	--Properties:
 
 	Prisma.Name = "Prisma"
 	Prisma.Parent = game.CoreGui
-	Prisma.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	Prisma.ResetOnSpawn = false
 
-	outline.Name = "outline"
-	outline.Parent = Prisma
-	outline.Active = true
-	outline.AnchorPoint = Vector2.new(0.5, 0.5)
-	outline.BackgroundColor3 = Color3.fromRGB(255, 170, 127)
-	outline.Position = UDim2.new(0.5,0,2,0)
-	outline.Selectable = true
-	outline.Size = UDim2.new(0, 202, 0, 42)
+	CmdBarFrame.Name = "CmdBarFrame"
+	CmdBarFrame.Parent = Prisma
+	CmdBarFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+	CmdBarFrame.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+	CmdBarFrame.BackgroundTransparency = 0.500
+	CmdBarFrame.BorderSizePixel = 0
+	CmdBarFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+	CmdBarFrame.Size = UDim2.new(1, 0, 0.100000001, 0)
 
-	UICorner.CornerRadius = UDim.new(0, 4)
-	UICorner.Parent = outline
+	CmdBarDesign.Name = "CmdBarDesign"
+	CmdBarDesign.Parent = CmdBarFrame
+	CmdBarDesign.AnchorPoint = Vector2.new(0.5, 0.5)
+	CmdBarDesign.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CmdBarDesign.BackgroundTransparency = 1.000
+	CmdBarDesign.BorderSizePixel = 0
+	CmdBarDesign.Position = UDim2.new(0.5, 0, 0.5, 0)
+	CmdBarDesign.Size = UDim2.new(0.25, 0, 0.75, 0)
+	CmdBarDesign.Image = "rbxassetid://3570695787"
+	CmdBarDesign.ImageColor3 = Color3.fromRGB(53, 53, 53)
+	CmdBarDesign.ImageTransparency = 0.750
+	CmdBarDesign.ScaleType = Enum.ScaleType.Slice
+	CmdBarDesign.SliceCenter = Rect.new(100, 100, 100, 100)
+	CmdBarDesign.SliceScale = 0.120
 
 	input.Name = "input"
-	input.Parent = outline
+	input.Parent = CmdBarDesign
 	input.AnchorPoint = Vector2.new(0.5, 0.5)
-	input.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+	input.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	input.BackgroundTransparency = 1.000
+	input.BorderSizePixel = 0
 	input.Position = UDim2.new(0.5, 0, 0.5, 0)
-	input.Size = UDim2.new(0, 200, 0, 40)
-	input.ZIndex = 2
+	input.Size = UDim2.new(0.949999988, 0, 0.949999988, 0)
 	input.Font = Enum.Font.SourceSans
-	input.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
-	input.Text = "mdvo"
-	input.TextColor3 = Color3.fromRGB(255, 255, 255)
-	input.TextSize = 16.000
+	input.PlaceholderColor3 = Color3.fromRGB(231, 231, 231)
+	input.Text = ""
+	input.TextColor3 = Color3.fromRGB(231, 231, 231)
+	input.TextSize = 17.000
 
-	background.Name = "background"
-	background.Parent = outline
-	background.Active = true
-	background.AnchorPoint = Vector2.new(0.5, 0.5)
-	background.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
-	background.Position = UDim2.new(0.5, 0, 0.5, 0)
-	background.Selectable = true
-	background.Size = UDim2.new(0, 200, 0, 40)
+	CmdList.Name = "-CmdList"
+	CmdList.Parent = Prisma
+	CmdList.Active = true
+	CmdList.AnchorPoint = Vector2.new(0.5, 0)
+	CmdList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CmdList.BackgroundTransparency = 1.000
+	CmdList.BorderSizePixel = 0
+	CmdList.Position = UDim2.new(0.5, 0, 0.574999988, 0)
+	CmdList.Size = UDim2.new(0.200000003, 0, 0.300000012, 0)
+	CmdList.CanvasSize = UDim2.new(0, 0, 0, 0)
 
-	UICorner_2.CornerRadius = UDim.new(0, 4)
-	UICorner_2.Parent = background
-    
-    autocomplete = input:Clone()
-    autocomplete.Name = "autocomplete"
-    autocomplete.TextColor3 = Color3.fromRGB(0, 0, 0)
-    autocomplete.ClearTextOnFocus = false
-    autocomplete.TextEditable = false
-    autocomplete.Parent = outline
-	autocomplete.Visible = false
-    autocomplete.ZIndex = 1
-	autocomplete.Position = UDim2.new(0.5,0,1.3, 0)
-    
-    outline.Visible = false
+	ExampleLabel.Name = "ExampleLabel"
+	ExampleLabel.Parent = CmdList
+	ExampleLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	ExampleLabel.BackgroundTransparency = 1.000
+	ExampleLabel.BorderSizePixel = 0
+	ExampleLabel.Size = UDim2.new(1, 0, 0.174999997, 0)
+	ExampleLabel.Visible = false
+	ExampleLabel.Font = Enum.Font.SourceSans
+	ExampleLabel.TextColor3 = Color3.fromRGB(222, 222, 222)
+	ExampleLabel.TextSize = 14.000
+	ExampleLabel.TextTransparency = 1.000
+
+	CmdListUIListLayout.Name = "CmdListUIListLayout"
+	CmdListUIListLayout.Parent = CmdList
+	CmdListUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+	local CmdBlurEffect = Instance.new("BlurEffect")
+	CmdBlurEffect.Name = "CmdBlurEffect"
+	CmdBlurEffect.Parent = game:GetService("Lighting")
+	CmdBlurEffect.Enabled = true
+	CmdBlurEffect.Size = 0
+
+	CmdBar = input
+
+	function closeCMD()
+		game:GetService("TweenService"):Create(CmdBlurEffect, TweenInfo.new(0.25, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = 0}):Play()
+		game:GetService("TweenService"):Create(CmdBarFrame, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0.0, 0)}):Play()
+		CmdBar:ReleaseFocus()
+		CmdList.Visible = false
+		game:GetService("TweenService"):Create(CmdBarDesign, TweenInfo.new(0.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 1}):Play()
+		game:GetService("TweenService"):Create(CmdBar, TweenInfo.new(0.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {TextTransparency = 1}):Play()
+		wait(0.25)
+		CmdBar.Text = ""
+	end
+
+	function openCMD()
+		CmdBar:CaptureFocus()
+		game:GetService("TweenService"):Create(CmdBlurEffect, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = 15}):Play()
+		game:GetService("TweenService"):Create(CmdBarFrame, TweenInfo.new(0.5, Enum.EasingStyle.Circular, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0.100000001, 0)}):Play()
+		wait(0.25)
+		CmdList.Visible = true
+		game:GetService("TweenService"):Create(CmdBarDesign, TweenInfo.new(0.25, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0.75}):Play()
+		game:GetService("TweenService"):Create(CmdBar, TweenInfo.new(0.25, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {TextTransparency = 0}):Play()
+		CmdBar.Text = " "
+		CmdBar.Text = ""
+		wait(0.25)
+	end
+
+	game:GetService("TweenService"):Create(CmdBlurEffect, TweenInfo.new(0, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = 0}):Play()
+	game:GetService("TweenService"):Create(CmdBarFrame, TweenInfo.new(0, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0.0, 0)}):Play()
+	CmdList.Visible = false
+	game:GetService("TweenService"):Create(CmdBarDesign, TweenInfo.new(0, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 1}):Play()
+	game:GetService("TweenService"):Create(CmdBar, TweenInfo.new(0, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {TextTransparency = 1}):Play()
+	CmdBar.Text = ""
 end
 
 createUI()
 
 --- Rainbowify
 
-spawn(function()
-    local r = {
-        Color3.fromRGB(254, 0, 0);		--red
-        Color3.fromRGB(255, 127, 0);	--orange
-        Color3.fromRGB(255, 221, 1);	--yellow
-        Color3.fromRGB(0, 200, 0);		--green
-        Color3.fromRGB(0, 160, 199);	--light blue
-        Color3.fromRGB(0, 55, 230);		--dark blue
-        Color3.fromRGB(129, 16, 210)}	--purple
-    local info = TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false, 0)
-    input.TextColor3 = r[1]
-	outline.BackgroundColor3 = r[1]
-    i = 1
-    while true do
-        local tween = game:GetService("TweenService"):Create(input, info, {
-            TextColor3 = r[i]})
-        tween:Play()
-		local tween2 = game:GetService("TweenService"):Create(outline, info, {
-            BackgroundColor3 = r[i]})
-        tween2:Play()
+-- spawn(function()
+--     local r = {
+--         Color3.fromRGB(254, 0, 0);		--red
+--         Color3.fromRGB(255, 127, 0);	--orange
+--         Color3.fromRGB(255, 221, 1);	--yellow
+--         Color3.fromRGB(0, 200, 0);		--green
+--         Color3.fromRGB(0, 160, 199);	--light blue
+--         Color3.fromRGB(0, 55, 230);		--dark blue
+--         Color3.fromRGB(129, 16, 210)}	--purple
+--     local info = TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false, 0)
+--     input.TextColor3 = r[1]
+-- 	outline.BackgroundColor3 = r[1]
+--     i = 1
+--     while true do
+--         local tween = game:GetService("TweenService"):Create(input, info, {
+--             TextColor3 = r[i]})
+--         tween:Play()
+-- 		local tween2 = game:GetService("TweenService"):Create(outline, info, {
+--             BackgroundColor3 = r[i]})
+--         tween2:Play()
 
-        repeat
-            wait(0.1)
-            if i == #r then
-                i = 1 
-            else
-                i = i + 1 
-            end
-        until tween.Completed
+--         repeat
+--             wait(0.1)
+--             if i == #r then
+--                 i = 1 
+--             else
+--                 i = i + 1 
+--             end
+--         until tween.Completed
 
-    end
-end)
+--     end
+-- end)
 
 --- Main Functions
 
@@ -256,120 +376,7 @@ end
 
 
 local waiting = {}
--- function notify(text,colon,imageID,soundid,volume)
--- 	local ded = false
--- 	local function createNotifInstance()
--- 		local NotificationTemplate = Instance.new("TextLabel")
--- 		NotificationTemplate.Name = "NotificationTemplate"
--- 		NotificationTemplate.BackgroundColor3 = Color3.fromRGB(34, 87, 168)
--- 		NotificationTemplate.BorderColor3 = Color3.fromRGB(27, 42, 53)
--- 		NotificationTemplate.BorderSizePixel = 0
--- 		NotificationTemplate.Position = UDim2.new(-0.903124988, 0, 0.931617498, 0)
--- 		NotificationTemplate.Size = UDim2.new(0, 100, 0, 15)
--- 		NotificationTemplate.Font = Enum.Font.Highway
--- 		NotificationTemplate.Text = "Hello there!"
--- 		NotificationTemplate.TextColor3 = Color3.fromRGB(234, 247, 255)
--- 		NotificationTemplate.TextScaled = true
--- 		NotificationTemplate.TextSize = 32.000
--- 		NotificationTemplate.TextWrapped = true
 
--- 		pcall(function()
--- 			local image = Instance.new("ImageLabel",NotificationTemplate)
--- 			image.Name = "image"
-			
--- 			image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
--- 			image.BackgroundTransparency = 1.000
--- 			image.BorderSizePixel = 0
--- 			image.Size = UDim2.new(0.100000001, 0, 1, 0)
--- 			if soundid ~= "error" then
--- 				image.Image = imageID
--- 			else
--- 				image.Image = "rbxassetid://10738342095"
--- 			end
--- 		end)
-		
-
--- 		return NotificationTemplate
--- 	end
-	
--- 	local NotificationsGui;
--- 	if Prisma:FindFirstChild("Popups") then
--- 		NotificationsGui = Prisma:FindFirstChild("Popups")
--- 	else
--- 		local Popups = Instance.new("Frame",Prisma)
--- 		local UIListLayout = Instance.new("UIListLayout")
--- 		Popups.Name = "Popups"
--- 		Popups.AnchorPoint = Vector2.new(1, 1)
--- 		Popups.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
--- 		Popups.BackgroundTransparency = 1.000
--- 		Popups.Position = UDim2.new(0.98989898, 0, 0.991729081, 0)
--- 		Popups.Size = UDim2.new(0, 320, 0, 567)
-
--- 		UIListLayout.Parent = Popups
--- 		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
--- 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
--- 		UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
--- 		UIListLayout.Padding = UDim.new(0, 10)
--- 		NotificationsGui = Popups
--- 	end
-
--- 	local newNotify = createNotifInstance()
--- 	newNotify.Text = text
--- 	newNotify.Parent = NotificationsGui
-
--- 	pcall(function()
--- 		local sound = Instance.new("Sound",workspace)
--- 		sound.Volume = volume or 1
--- 		if soundid ~= "error" then
--- 		sound.SoundId = soundid
--- 		else
--- 		sound.SoundId = "rbxassetid://4094488012"
--- 		sound.Volume = 15
--- 		end
--- 		sound.PlayOnRemove = true
--- 		sound:Destroy()
--- 	end)
-
--- 	-- newNotify.BackgroundColor3 = colour
-
--- 	if not colon or colon == nil then
--- 		newNotify.BackgroundColor3 = Color3.fromRGB(116, 116, 116)
--- 		-- coroutine.resume(coroutine.create(function()
--- 		-- 	while task.wait() do
--- 		-- 		if ded then
--- 		-- 			break
--- 		-- 		end
--- 		-- 		newNotify.BackgroundColor3 = colour
--- 		-- 	end
--- 		-- end))
--- 	else
--- 		newNotify.BackgroundColor3 = colon
--- 	end
-
--- 	table.insert(waiting,newNotify)
-
--- 	newNotify:TweenSize(UDim2.new(0, 380,0, 28), Enum.EasingDirection.Out, Enum.EasingStyle.Back,0.15)
--- 	coroutine.wrap(function()
--- 		wait(3)
--- 		for t = 0,1,0.1 do
--- 			newNotify.BackgroundTransparency = t
--- 			newNotify.TextTransparency = t
--- 			newNotify.image.ImageTransparency = t
--- 			wait()
--- 		end
--- 		wait(0.05)
--- 		for i,v in pairs(waiting) do
--- 			if v == newNotify then
--- 				table.remove(waiting,i)
--- 			end
--- 		end
--- 		ded = true
--- 		newNotify:Destroy()
--- 		if #waiting == 0 then
--- 			NotificationsGui:Destroy()
--- 		end
--- 	end)()
--- end
 function notify(text,lifetime,format)
 	if lifetime == nil then
 		lifetime = 3
@@ -829,6 +836,14 @@ input.FocusLost:Connect(function(enterPressed, inputThatCausedFocusLoss)
 	parseInput(input.Text)
 end)
 
+plr.Chatted:Connect(function(message, recipient)
+	local prefix = string.sub(message,1,1)
+	if prefix == "/" then
+		local message = string.sub(message,2,50)
+		parseInput(message)
+	end
+end)
+
 uis.InputBegan:Connect(function(input, gameProcessedEvent)
 	if gameProcessedEvent then return end
 	for i,v in pairs(Abinds) do
@@ -843,56 +858,144 @@ end)
 
 uis.InputBegan:Connect(function(input, gameProcessedEvent)
     if input.KeyCode == Enum.KeyCode.RightAlt and not gameProcessedEvent then
-        task.wait(.1)
-        toggle()
+        openCMD()
     end
 end)
 
 input.FocusLost:Connect(function(enterPressed, inputThatCausedFocusLoss)
-    toggle()
+    closeCMD()
 end)
 
-uis.InputBegan:Connect(function(keycode, gameProcessedEvent)
-	if keycode.KeyCode == Enum.KeyCode.Tab and outline.Visible == true then
-		if autocomplete.Text == "" or " " then
-			local txt = autocomplete.Text
-			task.wait()
-			input.Text = txt
-			input.CursorPosition = 50
-		end
-	end
-end)
+-- uis.InputBegan:Connect(function(keycode, gameProcessedEvent)
+-- 	if keycode.KeyCode == Enum.KeyCode.Tab and outline.Visible == true then
+-- 		if autocomplete.Text == "" or " " then
+-- 			local txt = autocomplete.Text
+-- 			task.wait()
+-- 			input.Text = txt
+-- 			input.CursorPosition = 50
+-- 		end
+-- 	end
+-- end)
+
+-- input:GetPropertyChangedSignal("Text"):Connect(function()
+--     pcall(function()
+-- 		if input.Text == "" then
+--             autocomplete.Text = ""
+--         else
+--         local text = input.Text
+
+--         local result = nil
+
+--         for i,v in pairs(cmds) do
+--             if v.Alias ~= nil then
+--                 if v.Alias:sub(1,#text):lower() == text then
+--                     result = v.Alias
+--                     elseif v.Command:sub(1,#text):lower() == text then
+--                         result = v.Command
+--                 end
+--             else
+--                 if v.Command:sub(1,#text):lower() == text then
+--                     result = v.Command
+--                 end
+--             end
+--         end
+
+--         if result ~= nil then
+--             autocomplete.Text = result
+--             else
+--             autocomplete.Text = ""
+--         end
+--     end
+-- 	end)
+-- end)
+
+local result = nil
 
 input:GetPropertyChangedSignal("Text"):Connect(function()
-    pcall(function()
-		if input.Text == "" then
-            autocomplete.Text = ""
-        else
-        local text = input.Text
+	cmdguiobject = CmdList
+	for i, v in pairs(cmdguiobject:GetChildren()) do
+		if v:IsA("GuiObject") and v.Visible == true then
+			v:Destroy()
+		end
+	end
+	cmdguiobject.CanvasSize = UDim2.new(0, 0, 0, 0)
+	local text = string.lower(input.Text)
 
-        local result = nil
+	local function crete(v,alias)
 
-        for i,v in pairs(cmds) do
-            if v.Alias ~= nil then
-                if v.Alias:sub(1,#text):lower() == text then
-                    result = v.Alias
-                    elseif v.Command:sub(1,#text):lower() == text then
-                        result = v.Command
-                end
-            else
-                if v.Command:sub(1,#text):lower() == text then
-                    result = v.Command
-                end
-            end
-        end
+		-- if not alias then
+		-- 	if v.Alias:sub(1,#text):lower() == text then
+		-- 		result = v.Alias
+		-- 		elseif v.Command:sub(1,#text):lower() == text then
+		-- 		result = v.Command
+		-- 	end
+		-- else
+		-- 	if v.Command:sub(1,#text):lower() == text then
+		-- 		result = v.Command
+		-- 	end
+		-- end
 
-        if result ~= nil then
-            autocomplete.Text = result
-            else
-            autocomplete.Text = ""
-        end
-    end
-	end)
+		local Cmd = ExampleLabel:Clone()
+		Cmd.Name = v.Command.. "_Cmd"
+		Cmd.Visible = true
+		Cmd.Parent = cmdguiobject
+		game:GetService("TweenService"):Create(Cmd, TweenInfo.new(0.35, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {TextTransparency = 0, TextStrokeTransparency = 0.9}):Play()
+		if v.Alias ~= nil then
+			Cmd.Text = v.Command .. " [" .. v.Alias .. "]"
+		else
+			Cmd.Text = v.Command
+		end
+			
+		local GetTextSizeY = game:GetService("TextService"):GetTextSize(Cmd.Text, Cmd.TextSize, Cmd.Font, Cmd.AbsoluteSize).Y
+		Cmd.Size = UDim2.new(0.949999988, 0, 0, GetTextSizeY + 10)
+		--cmdguiobject.CanvasSize = UDim2.new(cmdguiobject.CanvasSize.X.Scale, cmdguiobject.CanvasSize.X.Offset, 0, cmdguiobject.CanvasSize.Y.Offset + Cmd.TextBounds.Y + 15)
+
+	end
+
+	for i,v in pairs(cmds) do
+		if string.find(v.Command,text) then
+			crete(v,false)
+		elseif v.Alias ~= nil and string.find(v.Alias,text) then
+			crete(v,true)
+		end
+	end
+	-- for i,v in pairs(cmdguiobject:GetChildren()) do
+	-- 	if i == 3 then
+	-- 		print(v:GetAttribute("Command"))
+	-- 		result = v:GetAttribute("Command")
+	-- 	end
+	-- end
+end)
+
+local frame = CmdList
+local layout = frame:FindFirstChildOfClass("UIListLayout")
+local absoluteContentSize = layout.AbsoluteContentSize
+frame.CanvasSize = UDim2.new(0, 0, 0, absoluteContentSize.Y)
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	local absoluteContentSize = layout.AbsoluteContentSize
+	frame.CanvasSize = UDim2.new(0, 0, 0, absoluteContentSize.Y)
+end)
+
+
+uis.InputBegan:Connect(function(input, gameProcessedEvent)
+	if input.KeyCode == Enum.KeyCode.Tab then
+		local txt = nil
+		local text = string.lower(CmdBar.Text)
+		spawn(function()
+			for i,v in pairs(cmds) do
+				if string.find(v.Command,text) then
+					txt = v.Command
+					return
+				elseif v.Alias ~= nil and string.find(v.Alias,text) then
+					txt = v.Alias
+					return
+				end
+			end	
+		end)
+		task.wait(.05)
+		CmdBar.Text = txt
+		CmdBar.CursorPosition = #CmdBar.Text+1
+	end
 end)
 
 --- Ping display
@@ -955,14 +1058,6 @@ end)
 
 
 local locateTarget = nil
-
-plr.Chatted:Connect(function(message, recipient)
-	local prefix = string.sub(message,1,1)
-	if prefix == "^" then
-		local message = string.sub(message,2,50)
-		parseInput(message)
-	end
-end)
 
 
 
@@ -1938,7 +2033,7 @@ _G.addCMD("up",nil,function(amount)
 	plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + Vector3.new(0,degree,0)
 end)
 
-_G.addCMD("forward","thru",function(amount)
+_G.addCMD("forward",nil,function(amount)
 	local degree = tonumber(amount) or 0
 	plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,degree*-1)
 end)
@@ -3090,7 +3185,8 @@ _G.addCMD("precisionflight","pfly",function(arg)
 		
 
 		
-		plr.Character.HumanoidRootPart.CFrame = movePart.CFrame
+		plr.Character.HumanoidRootPart.CFrame = movePart.CFrame	
+		--plr.Character.HumanoidRootPart.CFrame = CFrame.lookAt(plr.Character.HumanoidRootPart.Position,plr.Character.HumanoidRootPart.Position+Vector3.new(getWalkDirectionWorldSpace(dt).X,0,getWalkDirectionWorldSpace(dt).Z))
 		plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
 		workspace.CurrentCamera.CameraSubject = movePart
 	end)
@@ -3117,33 +3213,368 @@ _G.addCMD("precisionflightspeed","pflyspeed",function(integer)
 	pfSpeed = tonumber(integer) or 100
 end)
 
+_G.addCMD("through","thru",function()
+	local rayOrigin = plr.Character.HumanoidRootPart.CFrame.p
+	local rayDirection = plr.Character.HumanoidRootPart.CFrame.LookVector * 30
 
+
+	local raycastResult = workspace:Raycast(rayOrigin, rayDirection)
+
+
+	if raycastResult then
+		local size = raycastResult.Instance.Size * raycastResult.Normal
+		plr.Character.HumanoidRootPart.CFrame = CFrame.new(raycastResult.Position) * CFrame.new(-size)
+		chatNotif("Woosh")
+	end
+end)
+
+_G.addCMD("hitgadget","gd",function()
+	spawn(function()
+		function loadInstanceWithScripts(id,parent)
+
+			-- local oldReq
+		
+			-- oldReq = hookfunction(require, function(instance)
+			--     print(instance.Name)
+		
+			--     if instance.Source then
+			--         return spawn(loadstring(instance.Source)())
+			--     end
+		
+			--     return oldReq(instance)
+			-- end)
+		
+			local loadedInstance = game:GetObjects(id)[1]
+			loadedInstance.Parent = parent
+			local function loadScriptInEnviroment(Script,source)
+				function sandbox(var,func)
+					local env = getfenv(func)
+					local newenv = setmetatable({},{
+						__index = function(self,k)
+							if k=="script" then
+								return var
+							else
+								return env[k]
+							end
+						end,
+					})
+					setfenv(func,newenv)
+					return func
+				end
+				cors = {}
+				LocalScript0 = Script
+				table.insert(cors,sandbox(LocalScript0,loadstring(source)))
+			
+				for i,v in pairs(cors) do
+					spawn(function()
+						pcall(v)
+					end)
+				end
+			end
+		
+			if loadedInstance:IsA("Script") or loadedInstance:IsA("LocalScript") then
+				loadScriptInEnviroment(loadedInstance,loadedInstance.Source)
+			end
+			
+			for i,v in pairs(loadedInstance:GetDescendants()) do
+				if v:IsA("LocalScript") or v:IsA("Script") then
+					if v.Enabled then
+						loadScriptInEnviroment(v,v.Source)
+					end
+				end
+			end
+		
+		
+			return loadedInstance
+		end
+		
+		loadInstanceWithScripts('rbxassetid://12211125451',game.Players.LocalPlayer.Backpack)
+	end)
+end)
 
 local notifColour = Color3.fromRGB(255, 255, 255)
 
-repeat
-	task.wait()
-    local Success = pcall(function()
-        game.StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = "> Loaded Prisma";
-            Font = Enum.Font.Cartoon;
-            Color = notifColour;
-            FontSize = 130;
-        })
-        game.StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = "> Version "..version;
-            Font = Enum.Font.Cartoon;
-            Color = notifColour;
-            FontSize = 130;
-        })
-        game.StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = "> "..versionText;
-            Font = Enum.Font.Cartoon;
-            Color = notifColour;
-            FontSize = 130;
-        })
-    end)
-until Success
+-- repeat
+-- 	task.wait()
+--     local Success = pcall(function()
+--         game.StarterGui:SetCore("ChatMakeSystemMessage", {
+--             Text = "> Loaded Prisma";
+--             Font = Enum.Font.Cartoon;
+--             Color = notifColour;
+--             FontSize = 130;
+--         })
+--         game.StarterGui:SetCore("ChatMakeSystemMessage", {
+--             Text = "> Version "..version;
+--             Font = Enum.Font.Cartoon;
+--             Color = notifColour;
+--             FontSize = 130;
+--         })
+--         game.StarterGui:SetCore("ChatMakeSystemMessage", {
+--             Text = "> "..versionText;
+--             Font = Enum.Font.Cartoon;
+--             Color = notifColour;
+--             FontSize = 130;
+--         })
+--     end)
+-- until Success
+
+spawn(function()
+	
+
+	local AdminGui = Instance.new("ScreenGui")
+	local Intro = Instance.new("Folder")
+	local LeftFrameThing = Instance.new("Frame")
+	local LoadingFrame = Instance.new("Frame")
+	local LoadingThing = Instance.new("Frame")
+	local RightFrameThing = Instance.new("Frame")
+	local LoadingFrame_2 = Instance.new("Frame")
+	local LoadingThing_2 = Instance.new("Frame")
+	local MainLogo = Instance.new("ImageLabel")
+	local MainLogo2 = Instance.new("ImageLabel")
+	local MiddleLogoThing = Instance.new("ImageLabel")
+	local AdminNameLabel = Instance.new("TextLabel")
+	
+	AdminGui.Name = "AdminGui"
+	AdminGui.Parent = game.CoreGui
+	
+	Intro.Name = "Intro"
+	Intro.Parent = AdminGui
+	
+	LeftFrameThing.Name = "LeftFrameThing"
+	LeftFrameThing.Parent = Intro
+	LeftFrameThing.AnchorPoint = Vector2.new(1, 0.5)
+	LeftFrameThing.BackgroundColor3 = Color3.fromRGB(69, 70, 72)
+	LeftFrameThing.LayoutOrder = 0
+	LeftFrameThing.Position = UDim2.new(-0.00100000005, 0, 0.5, 0)
+	LeftFrameThing.Size = UDim2.new(0.5, 0, 0.25, 0)
+	
+	RightFrameThing.Name = "RightFrameThing"
+	RightFrameThing.Parent = Intro
+	RightFrameThing.AnchorPoint = Vector2.new(0, 0.5)
+	RightFrameThing.BackgroundColor3 = Color3.fromRGB(69, 70, 72)
+	RightFrameThing.LayoutOrder = 0
+	RightFrameThing.Position = UDim2.new(1.00100005, 0, 0.5, 0)
+	RightFrameThing.Size = UDim2.new(0.5, 0, 0.25, 0)
+	
+	LoadingFrame.Name = "LoadingFrame"
+	LoadingFrame.Parent = LeftFrameThing
+	LoadingFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+	LoadingFrame.BackgroundColor3 = Color3.fromRGB(62, 63, 65)
+	LoadingFrame.LayoutOrder = 1
+	LoadingFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+	LoadingFrame.Size = UDim2.new(0.100000001, 0, 0.850000024, 0)
+	
+	LoadingThing.Name = "LoadingThing"
+	LoadingThing.Parent = LoadingFrame
+	LoadingThing.AnchorPoint = Vector2.new(0.5, 1)
+	LoadingThing.BackgroundColor3 = Color3.fromRGB(89, 130, 82)
+	LoadingThing.BorderSizePixel = 0
+	LoadingThing.LayoutOrder = 1
+	LoadingThing.Position = UDim2.new(0.5, 0, 1, 0)
+	LoadingThing.Size = UDim2.new(1, 0, 0, 0)
+	
+	LoadingFrame_2.Name = "LoadingFrame"
+	LoadingFrame_2.Parent = RightFrameThing
+	LoadingFrame_2.AnchorPoint = Vector2.new(0.5, 0.5)
+	LoadingFrame_2.BackgroundColor3 = Color3.fromRGB(62, 63, 65)
+	LoadingFrame_2.LayoutOrder = 1
+	LoadingFrame_2.Position = UDim2.new(0.5, 0, 0.5, 0)
+	LoadingFrame_2.Size = UDim2.new(0.100000001, 0, 0.850000024, 0)
+	
+	LoadingThing_2.Name = "LoadingThing"
+	LoadingThing_2.Parent = LoadingFrame_2
+	LoadingThing_2.AnchorPoint = Vector2.new(0.5, 1)
+	LoadingThing_2.BackgroundColor3 = Color3.fromRGB(89, 130, 82)
+	LoadingThing_2.BorderSizePixel = 0
+	LoadingThing_2.LayoutOrder = 1
+	LoadingThing_2.Position = UDim2.new(0.5, 0, 1, 0)
+	LoadingThing_2.Size = UDim2.new(1, 0, 0, 0)
+	
+	MiddleLogoThing.Name = "MiddleLogoThing"
+	MiddleLogoThing.Parent = Intro
+	MiddleLogoThing.AnchorPoint = Vector2.new(0.5, 0.5)
+	MiddleLogoThing.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	MiddleLogoThing.BackgroundTransparency = 1.000
+	MiddleLogoThing.LayoutOrder = 1
+	MiddleLogoThing.Position = UDim2.new(0.5, 0, 0.5, 0)
+	MiddleLogoThing.Size = UDim2.new(0.126000002, 0, 0.224999994, 0)
+	MiddleLogoThing.Visible = false
+	MiddleLogoThing.Image = "rbxassetid://3570695787"
+	MiddleLogoThing.ImageColor3 = Color3.fromRGB(53, 53, 53)
+	MiddleLogoThing.ImageTransparency = 1.000
+	MiddleLogoThing.ScaleType = Enum.ScaleType.Fit
+	MiddleLogoThing.SliceCenter = Rect.new(100, 100, 100, 100)
+	MiddleLogoThing.SliceScale = 0.120
+	
+	MainLogo.Name = "MainLogo"
+	MainLogo.Parent = Intro
+	MainLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+	MainLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	MainLogo.BackgroundTransparency = 1.000
+	MainLogo.LayoutOrder = 2
+	MainLogo.Position = UDim2.new(0.5, 0, 0.5, 0)
+	MainLogo.Size = UDim2.new(0.126000002, 0, 0.224999994, 0)
+	MainLogo.Visible = false
+	MainLogo.Image = "http://www.roblox.com/asset/?id=5280464374"
+	MainLogo.ImageColor3 = Color3.fromRGB(0, 0, 0)
+	MainLogo.ImageTransparency = 1.000
+	MainLogo.ScaleType = Enum.ScaleType.Fit
+	MainLogo.SliceCenter = Rect.new(100, 100, 100, 100)
+	MainLogo.SliceScale = 0.120
+	
+	MainLogo2.Name = "MainLogo2"
+	MainLogo2.Parent = MainLogo
+	MainLogo2.AnchorPoint = Vector2.new(0.5, 0.5)
+	MainLogo2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	MainLogo2.BackgroundTransparency = 1.000
+	MainLogo2.LayoutOrder = 4
+	MainLogo2.Position = UDim2.new(0.5, 0, 0.5, 0)
+	MainLogo2.Size = UDim2.new(0.99000001, 0, 0.99000001, 0)
+	MainLogo2.Image = "http://www.roblox.com/asset/?id=5280464374"
+	MainLogo2.ImageColor3 = Color3.fromRGB(89, 85, 73)
+	MainLogo2.ImageTransparency = 1.000
+	MainLogo2.ScaleType = Enum.ScaleType.Fit
+	MainLogo2.SliceCenter = Rect.new(100, 100, 100, 100)
+	MainLogo2.SliceScale = 0.120
+	
+	AdminNameLabel.Name = "AdminNameLabel"
+	AdminNameLabel.Parent = Intro
+	AdminNameLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+	AdminNameLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	AdminNameLabel.BackgroundTransparency = 1.000
+	AdminNameLabel.BorderSizePixel = 0
+	AdminNameLabel.Position = UDim2.new(0.5, 0, 0.725000024, 0)
+	AdminNameLabel.Size = UDim2.new(0.600000024, 0, 0.075000003, 0)
+	AdminNameLabel.Visible = false
+	AdminNameLabel.Font = Enum.Font.SourceSans
+	AdminNameLabel.Text = ""
+	AdminNameLabel.TextColor3 = Color3.fromRGB(200, 197, 166)
+	AdminNameLabel.TextScaled = true
+	AdminNameLabel.TextSize = 14.000
+	AdminNameLabel.TextStrokeTransparency = 0.800
+	AdminNameLabel.TextWrapped = true
+	
+	local AdminNameLabel_2 = AdminNameLabel:Clone()
+	AdminNameLabel_2.Name = "AdminNameLabel"
+	AdminNameLabel_2.Parent = Intro
+	AdminNameLabel_2.AnchorPoint = Vector2.new(0.5, 0.5)
+	AdminNameLabel_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	AdminNameLabel_2.BackgroundTransparency = 1.000
+	AdminNameLabel_2.BorderSizePixel = 0
+	AdminNameLabel_2.Position = UDim2.new(0.5, 0, 0.785000024, 0)
+	AdminNameLabel_2.Size = UDim2.new(0.400000024, 0, 0.055000003, 0)
+	AdminNameLabel_2.Visible = false
+	AdminNameLabel_2.Font = Enum.Font.SourceSans
+	AdminNameLabel_2.Text = ""
+	AdminNameLabel_2.TextColor3 = Color3.fromRGB(200, 197, 166)
+	AdminNameLabel_2.TextScaled = true
+	AdminNameLabel_2.TextSize = 14.000
+	AdminNameLabel_2.TextStrokeTransparency = 0.800
+	AdminNameLabel_2.TextWrapped = true
+	
+	local cancel = false
+	
+	spawn(function()
+		local r = {
+			Color3.fromRGB(254, 0, 0);		--red
+			Color3.fromRGB(255, 127, 0);	--orange
+			Color3.fromRGB(255, 221, 1);	--yellow
+			Color3.fromRGB(0, 200, 0);		--green
+			Color3.fromRGB(0, 160, 199);	--light blue
+			Color3.fromRGB(0, 55, 230);		--dark blue
+			Color3.fromRGB(129, 16, 210)}	--purple
+		local info = TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false, 0)
+		i = 1
+		local par = Intro.Parent
+		local naem = Intro.Name
+		while true do
+			if cancel then
+				break
+			end
+	
+			print("dsa")
+			local tween = game:GetService("TweenService"):Create(LoadingThing, info, {
+				BackgroundColor3 = r[i]})
+			tween:Play()
+			local tween2 = game:GetService("TweenService"):Create(LoadingThing_2, info, {
+				BackgroundColor3 = r[i]})
+			tween2:Play()
+	
+			repeat
+				wait(0.1)
+				if i == #r then
+					i = 1 
+				else
+					i = i + 1 
+				end
+			until tween.Completed
+	
+		end
+	end)
+	
+	game:GetService("TweenService"):Create(LeftFrameThing, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(1, 0, 0.5, 0)}):Play()
+	game:GetService("TweenService"):Create(RightFrameThing, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(0, 0, 0.5, 0)}):Play()
+	wait(0.5)
+	
+	MiddleLogoThing.Visible = true
+	game:GetService("TweenService"):Create(MiddleLogoThing, TweenInfo.new(0.35, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0}):Play()
+	wait(0.35 / 2)
+	MainLogo.Visible = true
+	MainLogo2.Visible = true
+	game:GetService("TweenService"):Create(MainLogo, TweenInfo.new(0.35, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0}):Play()
+	game:GetService("TweenService"):Create(MainLogo, TweenInfo.new(0.35, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Rotation = 180}):Play()
+	game:GetService("TweenService"):Create(MainLogo2, TweenInfo.new(0.35, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 0}):Play()
+	wait(0.35)
+	
+	
+	game:GetService("TweenService"):Create(MainLogo, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Rotation = 360}):Play()
+	
+	
+	game:GetService("TweenService"):Create(LoadingThing, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+	game:GetService("TweenService"):Create(LoadingThing_2, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+	
+	version = "{!#version} 2.3.1 {/#version}"
+	version = string.sub(version,13,17)
+	
+	AdminNameLabel.Visible = true
+	for i = 1, #"Prisma | V" + #version do
+		AdminNameLabel.Text = string.sub("Prisma | V" .. version, 1, i)
+		wait(0.5 / (#"Prisma | V" + #version))
+	end
+	AdminNameLabel_2.Visible = true
+	for i = 1, #versionText do
+		AdminNameLabel_2.Text = string.sub(versionText, 1, i)
+		wait(0.5 / (#versionText))
+	end
+	game:GetService("TweenService"):Create(MainLogo, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Rotation = 360 + 180}):Play()
+	wait(0.5)
+	game:GetService("TweenService"):Create(MainLogo, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Rotation = 360 * 2 + 180}):Play()
+	wait(0.5)
+	
+	game:GetService("TweenService"):Create(LeftFrameThing, TweenInfo.new(0.35, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = UDim2.new(-0.001, 0, 0.5, 0)}):Play()
+	game:GetService("TweenService"):Create(RightFrameThing, TweenInfo.new(0.35, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = UDim2.new(1.001, 0, 0.5, 0)}):Play()
+	wait(0.35 / 2)
+	
+	game:GetService("TweenService"):Create(MiddleLogoThing, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 1}):Play()
+	
+	game:GetService("TweenService"):Create(MainLogo, TweenInfo.new(0.45, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 1}):Play()
+	game:GetService("TweenService"):Create(MainLogo, TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Rotation = 45}):Play()
+	game:GetService("TweenService"):Create(MainLogo2, TweenInfo.new(0.45, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageTransparency = 1}):Play()
+	
+	wait(0.75)
+	game:GetService("TweenService"):Create(AdminNameLabel_2,TweenInfo.new(0.5),{
+		TextStrokeTransparency = 1,
+		TextTransparency = 1
+	}):Play()
+	game:GetService("TweenService"):Create(AdminNameLabel,TweenInfo.new(0.5),{
+		TextStrokeTransparency = 1,
+		TextTransparency = 1
+	}):Play()
+	task.wait(.5)
+	cancel = true
+	Intro:Destroy()
+	
+end)
 
 if game.PlaceId == 292439477 then
 	executeCommand("bind","all")
