@@ -978,7 +978,7 @@ end)
 
 
 uis.InputBegan:Connect(function(input, gameProcessedEvent)
-	if input.KeyCode == Enum.KeyCode.Tab then
+	if input.KeyCode == Enum.KeyCode.Tab and CmdList.Visible then
 		local txt = nil
 		local text = string.lower(CmdBar.Text)
 		spawn(function()
@@ -993,6 +993,7 @@ uis.InputBegan:Connect(function(input, gameProcessedEvent)
 			end	
 		end)
 		task.wait(.05)
+		if txt == nil then return end
 		CmdBar.Text = txt
 		CmdBar.CursorPosition = #CmdBar.Text+1
 	end
