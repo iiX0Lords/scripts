@@ -67,4 +67,6 @@ function loadInstanceWithScripts(id,parent)
     return loadedInstance
 end
 _G.core = true
-loadInstanceWithScripts("rbxassetid://12248306304",plr.PlayerScripts)
+loadInstanceWithScripts("rbxassetid://12256817052",plr.PlayerScripts)
+
+--loadstring(game:HttpGet(('https://raw.githubusercontent.com/iiX0Lords/scripts/main/drone.lua'),true))()
