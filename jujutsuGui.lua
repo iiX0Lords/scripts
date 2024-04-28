@@ -1,68 +1,72 @@
+
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
 local plr = game.Players.LocalPlayer
-local uis = game:GetService("UserInputService")
-local runservice = game:GetService("RunService")
+local mouse = plr:GetMouse()
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local runservice = game:GetService('RunService')
+local uis = game:GetService('UserInputService')
+local tweenservice = game:GetService('TweenService')
 
-local Window = Rayfield:CreateWindow({
-	Name = "SigmaMale9000",
-	LoadingTitle = "Kissing Dudes",
-	LoadingSubtitle = "Enjoying It",
-	ConfigurationSaving = {
-		Enabled = false,
-		FolderName = "...",
-		FileName = "Siguma"
-	},
-	KeySystem = false,
-	KeySettings = {
-		Title = "dsadas",
-		Subtitle = "dadsadsadsa",
-		Note = "Jdadsaddaassa",
-		SaveKey = true,
-		Key = "ABCDEF"
-	}
-})
 
-local main = Window:CreateTab("Main")
+local Window = OrionLib:MakeWindow({Name = "SigmaMale9000", HidePremium = false, SaveConfig = false, ConfigFolder = "SigmaMale", IntroEnabled = false})
+
 
 local toggles = {
-    AntiStun = false,
-    AlwaysCanJump = false,
-    Aimbot = false,
+    AntiStun = {
+        Toggled = false,
+        LegitMode = false,
+    },
+    AutoDodge = {
+        Toggled = false,
+        TpDistance = 6,
+        ActivationDistance = 15,
+    }
 }
 
---// Stun Shit
-
-local stun = main:CreateToggle({
-    Name = "Anti-Stun",
-    CurrentValue = false,
-    Flag = "stun",
-    Callback = function(Value)
-        toggles.AntiStun = Value
-    end,
+local aStunSection = Window:MakeTab({
+	Name = "Anti-Stun",
+	Icon = nil,
+	PremiumOnly = false
 })
-local canjump = main:CreateToggle({
-    Name = "Always Can Jump",
-    CurrentValue = false,
-    Flag = "jump",
+
+
+aStunSection:AddToggle({
+    Name = "Toggle",
+    Default = false,
     Callback = function(Value)
-        toggles.AlwaysCanJump = Value
-    end,
+        toggles.AntiStun.Toggled = Value
+    end
+})
+
+aStunSection:AddToggle({
+    Name = "Legit Mode",
+    Default = false,
+    Callback = function(Value)
+        toggles.AntiStun.LegitMode = Value
+    end
 })
 
 function handler(character)
     character.Info.ChildAdded:Connect(function(child)
-        if toggles.AntiStun then
-            if child.Name == "Stun" then
-                child.Name = ""
-            end
-        end
-        if toggles.AlwaysCanJump then
-            if child.Name == "NoJump" then
-                child.Name = ""
-            end
-        end
+        if toggles.AntiStun.Toggled then
+            if toggles.AntiStun.LegitMode == false then
 
+                if child.Name == "Stun" then
+                    child.Name = ""
+                end
+
+                else
+
+                if character.Info:FindFirstChild("InSkill") then
+                    if child.Name == "Stun" then
+                        child.Name = ""
+                    end
+                end
+
+            end
+
+        end
     end)
 end
 plr.CharacterAdded:Connect(function(character)
@@ -71,55 +75,51 @@ plr.CharacterAdded:Connect(function(character)
 end)
 handler(plr.Character)
 
+--// Auto Dodge
 
---// AutoPArry
-
-local Radius = 1
-
-local aimbotBtn = main:CreateToggle({
-    Name = "Auto-Parry",
-    CurrentValue = false,
-    Flag = "aimbtn",
-    Callback = function(Value)
-        toggles.Aimbot = Value
-    end,
+local autoDodge = Window:MakeTab({
+	Name = "Auto Dodge",
+	Icon = nil,
+	PremiumOnly = false
 })
 
-local aimbotRadius = main:CreateSlider({
-    Name = "Radius",
-    Range = {1, 15},
-    Increment = 1,
-    Suffix = "Studs",
-    CurrentValue = Radius,
-    Flag = "aimslider",
+autoDodge:AddToggle({
+    Name = "Toggle",
+    Default = false,
     Callback = function(Value)
-        Radius = Value
-        print(Value)
-    end,
+        toggles.AutoDodge.Toggled = Value
+    end
 })
 
-local distanceTP = 5
-local tpDistance = main:CreateSlider({
-    Name = "TP Distance",
-    Range = {1, 15},
-    Increment = 1,
-    Suffix = "Studs",
-    CurrentValue = distanceTP,
-    Flag = "aimslider",
-    Callback = function(Value)
-        distanceTP = Value
-    end,
+autoDodge:AddSlider({
+	Name = "Activation Distance",
+	Min = 5,
+	Max = 20,
+	Default = 15,
+	Color = Color3.fromRGB(0, 140, 255),
+	Increment = 1,
+	ValueName = "Studs",
+	Callback = function(Value)
+		toggles.AutoDodge.ActivationDistance = Value
+	end    
 })
 
-function block()
-    game:GetService("ReplicatedStorage").Knit.Knit.Services.BlockService.RE.Activated:FireServer()
-end
-function unblock()
-    game:GetService("ReplicatedStorage").Knit.Knit.Services.BlockService.RE.Deactivated:FireServer()
-end
+autoDodge:AddSlider({
+	Name = "TP Distance",
+	Min = 1,
+	Max = 10,
+	Default = 6,
+	Color = Color3.fromRGB(0, 140, 255),
+	Increment = 1,
+	ValueName = "Studs",
+	Callback = function(Value)
+		toggles.AutoDodge.TpDistance = Value
+	end    
+})
+
 
 runservice.RenderStepped:Connect(function(deltaTime)
-    if toggles.Aimbot then
+    if toggles.AutoDodge.Toggled then
         function getRoots()
             local roots = {}
             for _,player in pairs(game.Players:GetChildren()) do
@@ -133,7 +133,7 @@ runservice.RenderStepped:Connect(function(deltaTime)
         end
         
         position = plr.Character.HumanoidRootPart.Position
-        radius = Radius
+        radius = toggles.AutoDodge.ActivationDistance
         overlapParams = OverlapParams.new()
         overlapParams.FilterType = Enum.RaycastFilterType.Include
         overlapParams.FilterDescendantsInstances = getRoots()
@@ -144,18 +144,11 @@ runservice.RenderStepped:Connect(function(deltaTime)
             if v.Parent:FindFirstChildOfClass("Humanoid") then
                 local char = v.Parent
                 if char.Info:FindFirstChild("InSkill") then
-                    -- spawn(function()
-                    --     block()
-                    --     print("blockiong")
-                    --     repeat
-                    --         task.wait()
-                    --     until not char.Info:FindFirstChild("InSkill")
-                    --     unblock()
-                    --     print("fduunblock")
-                    -- end)
-                    plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0,0,distanceTP)
+                    plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0,0,toggles.AutoDodge.TpDistance)
                 end
             end
         end
     end
 end)
+
+OrionLib:Init()
