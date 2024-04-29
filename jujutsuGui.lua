@@ -21,6 +21,10 @@ local toggles = {
         Toggled = false,
         TpDistance = 6,
         ActivationDistance = 15,
+    },
+    AutoBlock = {
+        Toggled = false,
+        ActivationDistance = 15,
     }
 }
 
@@ -117,6 +121,41 @@ autoDodge:AddSlider({
 	end    
 })
 
+--// Auto block
+local autoBlock = Window:MakeTab({
+	Name = "Auto Block",
+	Icon = nil,
+	PremiumOnly = false
+})
+autoBlock:AddToggle({
+    Name = "Toggle",
+    Default = false,
+    Callback = function(Value)
+        toggles.AutoBlock.Toggled = Value
+    end
+})
+autoBlock:AddSlider({
+	Name = "Activation Distance",
+	Min = 5,
+	Max = 20,
+	Default = 5,
+	Color = Color3.fromRGB(0, 140, 255),
+	Increment = 1,
+	ValueName = "Studs",
+	Callback = function(Value)
+		toggles.AutoBlock.ActivationDistance = Value
+	end    
+})
+
+local blocking = false
+function block()
+    game:GetService("ReplicatedStorage").Knit.Knit.Services.BlockService.RE.Activated:FireServer()
+    blocking = true
+end
+function unblock()
+    game:GetService("ReplicatedStorage").Knit.Knit.Services.BlockService.RE.Deactivated:FireServer()
+    blocking = false
+end
 
 runservice.RenderStepped:Connect(function(deltaTime)
     if toggles.AutoDodge.Toggled then
@@ -145,6 +184,41 @@ runservice.RenderStepped:Connect(function(deltaTime)
                 local char = v.Parent
                 if char.Info:FindFirstChild("InSkill") then
                     plr.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0,0,toggles.AutoDodge.TpDistance)
+                end
+            end
+        end
+    end
+
+    if toggles.AutoBlock.Toggled then
+        function getRoots()
+            local roots = {}
+            for _,player in pairs(game.Players:GetChildren()) do
+                if player ~= plr then
+                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        table.insert(roots,player.Character.HumanoidRootPart)
+                    end
+                end
+            end
+            return roots
+        end
+        
+        position = plr.Character.HumanoidRootPart.Position
+        radius = toggles.AutoBlock.ActivationDistance
+        overlapParams = OverlapParams.new()
+        overlapParams.FilterType = Enum.RaycastFilterType.Include
+        overlapParams.FilterDescendantsInstances = getRoots()
+        
+        parts = workspace:GetPartBoundsInRadius(position, radius, overlapParams)
+        local characters = {}
+        for i,v in pairs(parts) do
+            if v.Parent:FindFirstChildOfClass("Humanoid") then
+                local char = v.Parent
+                if char.Info:FindFirstChild("InSkill") then
+                    block()
+                    else
+                    if blocking then
+                        unblock()
+                    end
                 end
             end
         end
